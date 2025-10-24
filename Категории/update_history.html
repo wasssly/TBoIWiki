@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>История обновлений — The Binding Of Isaac</title>
+
+  <link rel="icon" href="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" type="image/png">
+
+  <style>
+    :root{
+      --bg:#0f1720;
+      --card:#111827;
+      --muted:#9aa4b2;
+      --accent:#00bfff;
+      --glass: rgba(255,255,255,0.03);
+    }
+
+    html, body {
+      margin:0;
+      font-family: Inter,Segoe UI,Helvetica,Arial,sans-serif;
+      min-height:100%;
+      background: linear-gradient(180deg, #0f1720, #071020, #000000 70%, #000000 100%);
+      color:#e6eef6;
+    }
+
+    *{box-sizing:border-box;}
+    a{color:inherit;text-decoration:none;}
+
+    .top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .logo{
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      overflow:hidden;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+      cursor:pointer;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition: transform 0.4s ease;
+    }
+    .logo:hover{
+      transform:rotate(5deg) scale(1.05);
+      box-shadow:0 0 20px rgba(255,255,255,0.2);
+    }
+    .logo:hover img{
+      transform:scale(1.1);
+    }
+    .brand h1{
+      font-size:18px;
+      margin:0;
+    }
+    .brand p{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: var(--accent);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 20px;
+      transition: all 0.3s ease;
+    }
+    .back-button:hover{
+      background: rgba(0,191,255,0.1);
+    }
+
+    .container {
+  max-width: 1200px;
+  margin: 48px auto;
+  padding: 0 36px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  padding-top: 100px;
+}
+
+    .hero{
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:28px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.03);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:20px;
+      max-width:900px;
+      margin:0 auto;
+    }
+
+    .hero .cover{
+      width:100%;
+      max-width:900px;
+      height:310px;
+      border-radius:12px;
+      background-image:url('https://images.steamusercontent.com/ugc/18213564690241870068/0F9FA8B134A9253F5F1CEEFDBD3230FAFFCA2DAC/');
+      background-size:contain;
+      background-repeat:no-repeat;
+      background-position:center;
+      transition: transform 0.1s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      cursor:pointer;
+    }
+
+    .hero .info{
+      max-width:840px;
+      text-align:center;
+    }
+
+    .hero .info h2{
+      font-size:26px;
+      margin:0 0 12px 0;
+    }
+
+    .hero .info p{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .pill{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.05);
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      justify-content:center;
+      margin-bottom:20px;
+    }
+
+    .controls input, .controls select{
+      padding:8px 12px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.2);
+      background:var(--card);
+      color:#fff;
+      font-size:14px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+      gap:28px;
+    }
+
+    .tile{
+      background:var(--card);
+      padding:18px 20px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.02);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:12px;
+      cursor:pointer;
+    }
+
+    .tile:hover{
+      transform:translateY(-6px);
+      box-shadow:0 14px 26px rgba(0,0,0,0.8),0 0 28px rgba(0,191,255,0.4) inset;
+    }
+
+    .tile img{
+      width:60px;
+      height:60px;
+      object-fit:contain;
+      border-radius:8px;
+    }
+
+    .tile h3{
+      margin:0;
+      font-size:18px;
+      color:#fff;
+    }
+
+    .tile p{
+      margin:0;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .details{
+      max-height:0;
+      overflow:hidden;
+      transition:max-height 0.3s ease;
+      margin-top:8px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .tile.open .details{
+      max-height: 1000px;
+    }
+
+    @media(max-width:900px){
+      .grid{
+        grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+      }
+    }
+
+    @media(max-width:520px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+      .logo{
+        width:44px;
+        height:44px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <a href="../Isaac.html" class="back-button">← Назад</a>
+    <div class="logo">
+      <a href="../Isaac.html">
+        <img src="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" alt="Isaac logo">
+      </a>
+    </div>
+    <div>
+      <h1>The Binding Of Isaac — Википедия</h1>
+      <p>Фанатская википедия / История обновлений</p>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="cover" aria-hidden="true"></div>
+    <div class="info">
+      <span class="pill">История обновлений</span>
+      <h2>Хронология версий и патч-нотов</h2>
+      <p>Нажмите на любую версию, чтобы увидеть подробные изменения.</p>
+    </div>
+  </section>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Поиск по названию или описанию...">
+    <select id="sort">
+      <option value="desc">Сначала новые</option>
+      <option value="asc">Сначала старые</option>
+    </select>
+  </div>
+
+  <section class="grid" id="updates-grid">
+    <div class="tile" data-version="0.9">
+      <img src="https://static.wikia.nocookie.net/bindingofisaac/images/1/15/530collectibles.png/revision/latest?cb=20171011082714&path-prefix=ru" alt="Обновление 1.0">
+      <h3>Pre-Release v0.9</h3>
+      <p>29.10.2014</p>
+      <div class="details">
+        <ul>
+          <li>Первый релиз без инструметов дебага.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tile" data-version="1.0">
+      <img src="https://static.wikia.nocookie.net/bindingofisaac/images/5/5c/Horf.png/revision/latest?cb=20190823074924&path-prefix=ru" alt="Обновление 1.5">
+      <h3>Rebirth Release v1.0</h3>
+      <p>31.10.2014</p>
+      <div class="details">
+        <ul>
+          <li>Исправления.</li>
+          <li>Сотрёт все сохранённые игры.</li>
+          <li>Удален вывод некоторых логов.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tile" data-version="1.01">
+      <img src="https://static.wikia.nocookie.net/bindingofisaac/images/5/50/Boss_Monstro_ingame.png/revision/latest?cb=20220705131254&path-prefix=ru" alt="Обновление 2.0">
+      <h3>Patch v1.01</h3>
+      <p>07.11.2014</p>
+      <div class="details">
+        <ul><b>Дополнения</b><br></br>
+          <li>Добавьте параметр в Options.ini, где вы можете отключить Steam Cloud.</li>
+          <li>Добавьте ярлык ALT + F2 на странице статистики для импорта достижений Steam.</li>
+        </ul>
+        <br></br>
+        <ul><b>Исправления</b><br></br>
+          <li>Добавлены файлы саундтрека к дополнению Afterbirth.</li>
+          <li>Добавлены некоторые потерянные предметы в пулы предметов.</li>
+          <li>Исправлен сбой при использовании FBO в контекстах OpenGL 2.</li>
+          <li>Исправлены некоторые проблемы с Steam Cloud Sync.</li>
+          <li>Исправлена ошибка, из-за которой Призрак иногда оставался неуязвимым.</li>
+          <li>Исправлены другие ошибки, связанные с игровым процессом.</li>
+          <li>Исправлена проблема с черным экраном в OS X.</li>
+          <li>Исправлена позиция игрока при возвращении с черного рынка.</li>
+          <li>Исправлен вылет при сражении с одним из финальных боссов.</li>
+          <li>Исправлены проблемы с контроллером Xbox 360 в Linux.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tile" data-version="1.02">
+      <img src="https://static.wikia.nocookie.net/bindingofisaac/images/9/9a/Boss_Gluttony.png/revision/latest?cb=20210515133423&path-prefix=ru" alt="Обновление 3.0">
+      <h3>Patch v1.02</h3>
+      <p>11.11.2014</p>
+      <div class="details">
+        <ul><b>Исправления</b><br></br>
+          <li>Исправлены белые текстуры для игроков, использующих OpenGL 2.x из-за более старого графического оборудования. 
+            Если используется бета-версия "ogl2", обязательно откажитесь от бета-версии, чтобы правильно обновиться.</li>
+          <li>Исправлено исчезновение окна при запуске на Windows. Игровое окно появлялось на короткий промежуток времени, 
+            а затем исчезало, пока музыка все еще играла. Если ошибка все еще присутствует, нажмите Windows + Left или 
+            Windows + Right (маленькая клавиша с логотипом Windows и одна из клавиш со стрелками).</li>
+          <li>Исправлен сбой при запуске из-за сломанной options.ini, который можно было устранить путем удаления файла. 
+            Теперь игра может обнаруживать и восстанавливать поврежденные файлы .ini.</li>
+          <li>Исправлен сбой при запуске на Linux с ошибками шейдера в логе.</li>
+          <li>Исправлено Божество, ! Достижения «Платиновый бог!», «Настоящий платиновый бог» и «Мертвец» не открываются должным образом.</li>
+          <li>Исправлена проблема с высотой звука музыки во время катсцены «Эпилог», а также некоторые проблемы, связанные с игровым процессом.</li>
+          <li>Исправлен вылет при неработающем звуке.</li>
+          <li>Исправлено сохранение/продолжение во время Boss Rush.</li>
+          <li>Исправлены эксплойты The Lost + Dead Cat.</li>
+          <li>Исправлены эксплойты с бесконечным возрождением предметов.</li>
+          <li>Исправлен эксплойт P2 Trinity Shield.</li>
+          <li>Исправлена ошибка, из-за которой D10 генерировал непобедимых врагов.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const searchInput = document.getElementById('search');
+const sortSelect = document.getElementById('sort');
+const grid = document.getElementById('updates-grid');
+const tiles = Array.from(grid.children);
+
+// Фильтрация и сортировка
+function filterAndSortUpdates(){
+  const query = searchInput.value.toLowerCase();
+  const sortOrder = sortSelect.value;
+
+  tiles.forEach(tile=>{
+    const text=(tile.querySelector('h3').textContent + ' ' + tile.querySelector('p').textContent).toLowerCase();
+    tile.style.display=text.includes(query)?'flex':'none';
+  });
+
+  tiles.sort((a,b)=>{
+    const aVer=parseFloat(a.dataset.version);
+    const bVer=parseFloat(b.dataset.version);
+    return sortOrder==='asc'?aVer-bVer:bVer-aVer;
+  }).forEach(tile=>grid.appendChild(tile));
+}
+
+searchInput.addEventListener('input', filterAndSortUpdates);
+sortSelect.addEventListener('change', filterAndSortUpdates);
+
+// Разворачивание деталей
+tiles.forEach(tile=>{
+  tile.addEventListener('click', ()=>{
+    tile.classList.toggle('open');
+  });
+});
+</script>
+
+</body>
+</html>

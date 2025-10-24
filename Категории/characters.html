@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Персонажи — The Binding Of Isaac</title>
+  <link rel="icon" href="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" type="image/png">
+
+  <style>
+    :root {
+      --bg: #0f1720;
+      --card: #111827;
+      --muted: #9aa4b2;
+      --accent: #00bfff;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html, body {
+      margin: 0;
+      font-family: Inter,Segoe UI,Helvetica,Arial,sans-serif;
+      min-height: 100%;
+      background: linear-gradient(180deg, #0f1720, #071020, #000000 70%, #000000 100%);
+      color: #e6eef6;
+    }
+    * { box-sizing: border-box; }
+    a { color: inherit; text-decoration: none; }
+
+    .top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      cursor: pointer;
+    }
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .logo:hover {
+      transform: rotate(5deg) scale(1.05);
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+    .logo:hover img {
+      transform: scale(1.1);
+    }
+    .brand h1 {
+      font-size: 18px;
+      margin: 0;
+    }
+    .brand p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .container {
+  max-width: 1236px;
+  margin: 20px auto;
+  padding: 0 18px;
+  padding-top: 100px;
+}
+
+
+    .hero {
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.03);
+      display: flex;
+      gap: 18px;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: fadeInHero 1s ease forwards;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    }
+    @keyframes fadeInHero {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero .cover {
+      width: 300px;
+      height: 160px;
+      border-radius: 12px;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.1s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      box-shadow: inset 0 0 25px rgba(255,255,255,0.05), inset 0 0 40px rgba(0,0,0,0.4);
+      filter: brightness(1);
+    }
+    .hero .cover.leave {
+      transform: perspective(800px) rotateX(0deg) rotateY(0deg) scale(1);
+      filter: brightness(1);
+      box-shadow: inset 0 0 25px rgba(255,255,255,0.05), inset 0 0 40px rgba(0,0,0,0.4);
+    }
+    .hero .info h2 {
+      margin: 0 0 8px 0;
+    }
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .section-title {
+      margin-top: 32px;
+      margin-bottom: 12px;
+      font-size: 20px;
+      color: #e6eef6;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 6px;
+    }
+
+    .characters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .character-card {
+      background: var(--card);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.02);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    .character-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 20px rgba(0,0,0,0.7), 0 0 20px rgba(0,191,255,0.3) inset;
+    }
+    .character-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 12px;
+    }
+    .character-card h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .character-card p {
+      margin: 6px 0 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* Модальное окно */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background-color: var(--card);
+      margin: 8% auto;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      width: 90%;
+      max-width: 500px;
+      color: #e6eef6;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,191,255,0.2);
+      animation: fadeInModal 0.4s ease-out;
+    }
+    @keyframes fadeInModal {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .modal-content img {
+      display: block;
+      margin: 0 auto 12px;
+    }
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 24px;
+      color: #aaa;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .close-btn:hover {
+      color: #fff;
+    }
+    .stats p {
+      margin: 6px 0;
+    }
+    .desc {
+      margin-top: 12px;
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: var(--accent);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 20px;
+      transition: all 0.3s ease;
+    }
+    .back-button:hover{
+      background: rgba(0,191,255,0.1);
+    }
+
+#modal-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start !important;
+  text-align: left !important;
+  width: 100%;
+  margin: 0;
+  padding-left: 8px;
+}
+
+.stat-line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.stat-icon {
+  width: 25px; 
+  height: 25px;
+  margin-right: 4px;
+}
+
+.stat-line span {
+  font-size: 18px;
+  line-height: 2.5;
+  text-align: left;
+}
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top">
+    <div class="brand">
+        <a href="../Isaac.html" class="back-button">← Назад</a>
+      <div class="logo">
+        <a href="../Isaac.html">
+          <img src="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg".replace(',', '') alt="Isaac logo">
+        </a>
+      </div>
+      <div>
+        <h1>The Binding of Isaac — Википедия</h1>
+        <p>Фанатская википедия / Персонажи</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <div class="hero">
+        <div class="cover"
+             style="background-image: url('https://i.redd.it/4epbakm24vg71.png');">
+        </div>
+        <div class="info">
+          <span class="pill">Персонажи</span>
+          <h2>Все персонажи в The Binding of Isaac</h2>
+          <p class="small">Нажмите на карточку персонажа, чтобы увидеть подробную информацию.</p>
+        </div>
+      </div>
+
+      <!-- Группа: обычные персонажи -->
+      <div class="section-title">Обычные персонажи</div>
+      <div class="characters-grid" id="grid-normal">
+        
+        <!-- Айзек -->
+        <div class="character-card" data-char="Isaac">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/e/ee/Rep_%D0%98%D1%81%D0%B0%D0%B0%D0%BA.png/revision/latest?cb=20210404142934&path-prefix=ru" alt="Isaac">
+          <h3>Айзек (Isaac)</h3>
+          <p>Стартовый персонаж</p>
+        </div>
+
+        <!-- Магдалина -->
+        <div class="character-card" data-char="Magdalene">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/e/ed/Rep_%D0%9C%D0%B0%D0%B3%D0%B4%D0%B0%D0%BB%D0%B8%D0%BD%D0%B0.png/revision/latest?cb=20210404142543&path-prefix=ru" alt="Magdalene">
+          <h3>Магдалина (Magdalene)</h3>
+          <p>Много здоровья</p>
+        </div>
+
+        <!-- Каин -->
+        <div class="character-card" data-char="Cain">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/c/cd/Rep_%D0%9A%D0%B0%D0%B8%D0%BD.png/revision/latest?cb=20210405104754&path-prefix=ru" alt="Cain">
+          <h3>Каин (Cain)</h3>
+          <p>Быстрый, но слабее по здоровью</p>
+        </div>
+
+        <!-- Иуда -->
+        <div class="character-card" data-char="Judas">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/4/47/Rep_%D0%98%D1%83%D0%B4%D0%B0.png/revision/latest?cb=20210405111143&path-prefix=ru" alt="Judas">
+          <h3>Иуда (Judas)</h3>
+          <p>Высокий урон, мало здоровья</p>
+        </div>
+
+        <!-- Ева -->
+        <div class="character-card" data-char="Eve">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/2/2d/Rep_%D0%95%D0%B2%D0%B0.png/revision/latest?cb=20210405112445&path-prefix=ru" alt="Eve">
+          <h3>Ева (Eve)</h3>
+          <p>Усиления при низком HP</p>
+        </div>
+
+        <!-- ??? -->
+        <div class="character-card" data-char="Unknown">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/f/fc/Rep_%3F%3F%3F.png/revision/latest?cb=20210405112140&path-prefix=ru" alt="Unknown">
+          <h3>??? (Blue Baby)</h3>
+          <p>Только душевные сердца</p>
+        </div>
+
+        <!-- Самсон -->
+        <div class="character-card" data-char="Samson">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/3/31/Rep_%D0%A1%D0%B0%D0%BC%D1%81%D0%BE%D0%BD.png/revision/latest?cb=20210405211807&path-prefix=ru" alt="Samson">
+          <h3>Самсон (Samson)</h3>
+          <p>Только душевные сердца</p>
+        </div>
+
+        <!-- Азазель -->
+        <div class="character-card" data-char="Azazel">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/c/c8/Rep_%D0%90%D0%B7%D0%B0%D0%B7%D0%B5%D0%BB%D1%8C.png/revision/latest?cb=20210405212925&path-prefix=ru" alt="Azazel">
+          <h3>Азазель (Azazel)</h3>
+          <p>Полет + короткий лазер</p>
+        </div>
+
+        <!-- Лазарь -->
+        <div class="character-card" data-char="Lazarus">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/d/db/Rep_%D0%9B%D0%B0%D0%B7%D0%B0%D1%80%D1%8C.png/revision/latest?cb=20211115132748&path-prefix=ru" alt="Lazarus">
+          <h3>Лазарь (Lazarus)</h3>
+          <p>Воскрешается после смерти</p>
+        </div>
+
+        <!-- Эдем -->
+        <div class="character-card" data-char="Eden">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/5/55/Rep_%D0%AD%D0%B4%D0%B5%D0%BC.png/revision/latest?cb=20210405213831&path-prefix=ru" alt="Eden">
+          <h3>Эдем (Eden)</h3>
+          <p>Случайные статы и старт</p>
+        </div>
+
+        <!-- Потерянный -->
+        <div class="character-card" data-char="TheLost">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/1/15/Rep_%D0%9F%D0%BE%D1%82%D0%B5%D1%80%D1%8F%D0%BD%D0%BD%D1%8B%D0%B9.png/revision/latest?cb=20210405214057&path-prefix=ru" alt="The Lost">
+          <h3>Потерянный (The Lost)</h3>
+          <p>Любой удар — смерть</p>
+        </div>
+
+        <!-- Лилит -->
+        <div class="character-card" data-char="Lilith">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/3/33/Rep_%D0%9B%D0%B8%D0%BB%D0%B8%D1%82.png/revision/latest?cb=20210405214612&path-prefix=ru" alt="Lilith">
+          <h3>Лилит (Lilith)</h3>
+          <p>Работа с фамилиарами</p>
+        </div>
+
+        <!-- Хранитель -->
+        <div class="character-card" data-char="Keeper">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/0/0e/Rep_%D0%A5%D1%80%D0%B0%D0%BD%D0%B8%D1%82%D0%B5%D0%BB%D1%8C.png/revision/latest?cb=20210405214409&path-prefix=ru" alt="Keeper">
+          <h3>Хранитель (Keeper)</h3>
+          <p>Монетная механика</p>
+        </div>
+
+        <!-- Аполлион -->
+        <div class="character-card" data-char="Apollyon">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/e/e1/Rep_%D0%90%D0%BF%D0%BE%D0%BB%D0%BB%D0%B8%D0%BE%D0%BD.png/revision/latest?cb=20210405214247&path-prefix=ru" alt="Apollyon">
+          <h3>Аполлион (Apollyon)</h3>
+          <p>Активный предмет Void</p>
+        </div>
+
+        <!-- Забытый -->
+        <div class="character-card" data-char="TheForgotten">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/d/d6/Rep_%D0%97%D0%B0%D0%B1%D1%8B%D1%82%D1%8B%D0%B9.png/revision/latest?cb=20210405214848&path-prefix=ru" alt="The Forgotten">
+          <h3>Забытый (The Forgotten)</h3>
+          <p>Два режима: Тело и Душа</p>
+        </div>
+
+        <!-- Бетани -->
+        <div class="character-card" data-char="Bethany">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/0/0b/Rep_%D0%92%D0%B8%D1%84%D0%B0%D0%BD%D0%B8%D1%8F.png/revision/latest?cb=20210405215401&path-prefix=ru" alt="Bethany">
+          <h3>Бетани (Bethany)</h3>
+          <p>Использует soul charges</p>
+        </div>
+
+        <!-- Иаков и Исав -->
+        <div class="character-card" data-char="JacobEsau">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/5/5f/Rep_%D0%98%D0%B0%D0%BA%D0%BE%D0%B2_%D0%B8_%D0%98%D1%81%D0%B0%D0%B2.png/revision/latest?cb=20210405215416&path-prefix=ru" alt="Jacob & Esau">
+          <h3>Иаков и Исав (Jacob & Esau)</h3>
+          <p>Два персонажа одновременно</p>
+        </div>
+      </div>
+
+      <!-- Группа: альтернативные (Tainted) версии -->
+      <div class="section-title">Альтернативные версии (Tainted)</div>
+      <div class="characters-grid" id="grid-tainted">
+
+        <!-- Порченый Айзек -->
+        <div class="character-card" data-char="TaintedIsaac">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/b/ba/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%98%D1%81%D0%B0%D0%B0%D0%BA.png/revision/latest?cb=20210404142828&path-prefix=ru" alt="Tainted Isaac">
+          <h3>Порченый Айзек</h3>
+          <p>Таинственная версия Айзека</p>
+        </div>
+
+        <!-- Порченая Магдалина -->
+        <div class="character-card" data-char="TaintedMagdalene">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/3/3b/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D0%B0%D1%8F_%D0%9C%D0%B0%D0%B3%D0%B4%D0%B0%D0%BB%D0%B8%D0%BD%D0%B0.png/revision/latest?cb=20210404153939&path-prefix=ru" alt="Tainted Magdalene">
+          <h3>Порченая Магдалина</h3>
+          <p>Таинственная версия Магдалины</p>
+        </div>
+
+        <!-- Порченый Каин -->
+        <div class="character-card" data-char="TaintedCain">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/1/1a/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%9A%D0%B0%D0%B8%D0%BD.png/revision/latest?cb=20210404194216&path-prefix=ru" alt="Tainted Cain">
+          <h3>Порченый Каин</h3>
+          <p>Таинственная версия Каина</p>
+        </div>
+
+        <!-- Порченый Иуда -->
+        <div class="character-card" data-char="TaintedJudas">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/0/0d/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%98%D1%83%D0%B4%D0%B0.png/revision/latest?cb=20210404204450&path-prefix=ru" alt="Tainted Judas">
+          <h3>Порченый Иуда</h3>
+          <p>Таинственная версия Иуды</p>
+        </div>
+
+        <!-- Порченый ??? -->
+        <div class="character-card" data-char="TaintedUnknown">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/6/6e/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%3F%3F%3F.png/revision/latest?cb=20210404194740&path-prefix=ru" alt="Tainted Unknown">
+          <h3>Порченый ???</h3>
+          <p>Таинственная версия ???</p>
+        </div>
+
+        <!-- Порченая Ева -->
+        <div class="character-card" data-char="TaintedEve">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/2/2d/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D0%B0%D1%8F_%D0%95%D0%B2%D0%B0.png/revision/latest?cb=20210404194914&path-prefix=ru" alt="Tainted Eve">
+          <h3>Порченая Ева</h3>
+          <p>Таинственная версия Евы</p>
+        </div>
+
+        <!-- Порченый Самсон -->
+        <div class="character-card" data-char="TaintedSamson">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/7/7e/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%A1%D0%B0%D0%BC%D1%81%D0%BE%D0%BD.png/revision/latest?cb=20210404195040&path-prefix=ru" alt="Tainted Samson">
+          <h3>Порченый Самсон</h3>
+          <p>Таинственная версия Самсона</p>
+        </div>
+
+        <!-- Порченый Азазель -->
+        <div class="character-card" data-char="TaintedAzazel">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/6/6f/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%90%D0%B7%D0%B0%D0%B7%D0%B5%D0%BB%D1%8C.png/revision/latest?cb=20210511105517&path-prefix=ru" alt="Tainted Azazel">
+          <h3>Порченый Азазель</h3>
+          <p>Таинственная версия Азазеля</p>
+        </div>
+
+        <!-- Порченый Лазарь -->
+        <div class="character-card" data-char="TaintedLazarus">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/b/b5/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%9B%D0%B0%D0%B7%D0%B0%D1%80%D1%8C.png/revision/latest?cb=20211115132310&path-prefix=ru" alt="Tainted Lazarus">
+          <h3>Порченый Лазарь</h3>
+          <p>Таинственная версия Лазаря</p>
+        </div>
+
+        <!-- Порченый Эдем -->
+        <div class="character-card" data-char="TaintedEden">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/4/4a/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%AD%D0%B4%D0%B5%D0%BC.png/revision/latest?cb=20210404211134&path-prefix=ru" alt="Tainted Eden">
+          <h3>Порченый Эдем</h3>
+          <p>Таинственная версия Эдена</p>
+        </div>
+
+        <!-- Порченый Потерянный -->
+        <div class="character-card" data-char="TaintedTheLost">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/7/7c/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%9F%D0%BE%D1%82%D0%B5%D1%80%D1%8F%D0%BD%D0%BD%D1%8B%D0%B9.png/revision/latest?cb=20210404203643&path-prefix=ru" alt="Tainted The Lost">
+          <h3>Порченый Потерянный</h3>
+          <p>Таинственная версия The Lost</p>
+        </div>
+
+        <!-- Порченая Лилит -->
+        <div class="character-card" data-char="TaintedLilith">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/d/d0/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D0%B0%D1%8F_%D0%9B%D0%B8%D0%BB%D0%B8%D1%82.png/revision/latest?cb=20210404204653&path-prefix=ru" alt="Tainted Lilith">
+          <h3>Порченая Лилит</h3>
+          <p>Таинственная версия Лилит</p>
+        </div>
+
+        <!-- Порченый Хранитель -->
+        <div class="character-card" data-char="TaintedKeeper">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/a/a3/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%A5%D1%80%D0%B0%D0%BD%D0%B8%D1%82%D0%B5%D0%BB%D1%8C.png/revision/latest?cb=20210404204024&path-prefix=ru" alt="Tainted Keeper">
+          <h3>Порченый Хранитель</h3>
+          <p>Таинственная версия Keeper</p>
+        </div>
+
+        <!-- Порченый Аполлион -->
+        <div class="character-card" data-char="TaintedApollyon">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/4/4f/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%90%D0%BF%D0%BE%D0%BB%D0%BB%D0%B8%D0%BE%D0%BD.png/revision/latest?cb=20210404203744&path-prefix=ru" alt="Tainted Apollyon">
+          <h3>Порченый Аполлион</h3>
+          <p>Таинственная версия Аполлиона</p>
+        </div>
+
+        <!-- Порченый Забытый -->
+        <div class="character-card" data-char="TaintedForgotten">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/4/42/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%97%D0%B0%D0%B1%D1%8B%D1%82%D1%8B%D0%B9.png/revision/latest?cb=20210404204823&path-prefix=ru" alt="Tainted The Forgotten">
+          <h3>Порченый Забытый</h3>
+          <p>Таинственная версия Забытого</p>
+        </div>
+
+        <!-- Порченая Бетани -->
+        <div class="character-card" data-char="TaintedBethany">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/c/cb/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D0%B0%D1%8F_%D0%92%D0%B8%D1%84%D0%B0%D0%BD%D0%B8%D1%8F.png/revision/latest?cb=20210404204906&path-prefix=ru" alt="Tainted Bethany">
+          <h3>Порченая Бетани</h3>
+          <p>Таинственная версия Бетани</p>
+        </div>
+
+        <!-- Порченый Иаков -->
+        <div class="character-card" data-char="TaintedJacob">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/e/ef/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%98%D0%B0%D0%BA%D0%BE%D0%B2.png/revision/latest?cb=20210404210556&path-prefix=ru" alt="Tainted Jacob">
+          <h3>Порченый Иаков</h3>
+          <p>Таинственная версия Иакова</p>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Модал -->
+  <div class="modal" id="char-modal">
+    <div class="modal-content">
+      <span class="close-btn" id="modal-close">&times;</span>
+      <h2 id="modal-name">Имя персонажа</h2>
+      <img id="modal-img" src="" alt="" style="width: 120px; height: 120px;">
+      <div class="stats" id="modal-stats"></div>
+      <div class="desc" id="modal-desc"></div>
+    </div>
+  </div>
+
+  <script>
+    const statIcons = {
+  "Здоровье": "https://static.wikia.nocookie.net/bindingofisaac/images/3/3c/Hearticon_TBOIR.png/revision/latest?cb=20190416102349&path-prefix=ru",
+  "Урон": "https://static.wikia.nocookie.net/bindingofisaac/images/e/e1/%D0%A3%D1%80%D0%BE%D0%BD_icon.png/revision/latest/scale-to-width-down/24?cb=20210425085529&path-prefix=ru",
+  "Скорострельность": "https://static.wikia.nocookie.net/bindingofisaac/images/f/f0/%D0%A1%D0%BA%D0%BE%D1%80%D0%BE%D1%81%D1%82%D1%80%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D1%8C_icon.png/revision/latest/scale-to-width-down/24?cb=20210425085540&path-prefix=ru",
+  "Скорость": "https://static.wikia.nocookie.net/bindingofisaac/images/4/4f/%D0%A1%D0%BA%D0%BE%D1%80%D0%BE%D1%81%D1%82%D1%8C_icon.png/revision/latest/scale-to-width-down/24?cb=20210425085553&path-prefix=ru",
+  "Дальность": "https://static.wikia.nocookie.net/bindingofisaac/images/6/64/%D0%94%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D1%8C_icon.png/revision/latest/scale-to-width-down/24?cb=20210425085603&path-prefix=ru",
+  "Скорость слёз": "https://static.wikia.nocookie.net/bindingofisaac/images/5/5f/%D0%A1%D0%BA%D1%80%D0%BF%D0%BE%D0%BB%D1%91%D1%82%D0%B0_icon.png/revision/latest/scale-to-width-down/24?cb=20210425085612&path-prefix=ru",
+  "Удача": "https://static.wikia.nocookie.net/bindingofisaac/images/4/49/%D0%A3%D0%B4%D0%B0%D1%87%D0%B0_icon.png/revision/latest/scale-to-width-down/24?cb=20210425085619&path-prefix=ru"
+};
+
+    const characters = {
+      "Isaac": {
+        name: "Айзек (Isaac)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/e/ee/Rep_%D0%98%D1%81%D0%B0%D0%B0%D0%BA.png/revision/latest?cb=20210404142934&path-prefix=ru",
+        stats: [
+          "Здоровье: 3 красных сердца",
+          "Урон: 3.5 (*1.00)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Айзек — стартовый персонаж."
+      },
+
+      "Magdalene": {
+        name: "Магдалина (Magdalene)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/e/ed/Rep_%D0%9C%D0%B0%D0%B3%D0%B4%D0%B0%D0%BB%D0%B8%D0%BD%D0%B0.png/revision/latest?cb=20210404142543&path-prefix=ru",
+        stats: [ "Здоровье: 4 красных сердца",
+          "Урон: 2.73",
+          "Скорострельность: 2.73",
+          "Скорость: 0.85",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Магдалина обладает большим запасом здоровья."
+      },
+
+      "Cain": {
+        name: "Каин (Cain)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/c/cd/Rep_%D0%9A%D0%B0%D0%B8%D0%BD.png/revision/latest?cb=20210405104754&path-prefix=ru",
+        stats: [ "Здоровье: 2 красных сердца",
+          "Урон: 4.2 (3.5*1.2)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.3",
+          "Дальность: 4.5",
+          "Скорость слёз: 1",
+          "Удача: 1" 
+        ],
+        desc: "Каин — быстрый, но менее выносливый персонаж."
+      },
+
+      "Judas": {
+        name: "Иуда (Judas)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/4/47/Rep_%D0%98%D1%83%D0%B4%D0%B0.png/revision/latest?cb=20210405111143&path-prefix=ru",
+        stats: [ "Здоровье: 1 красное сердце",
+          "Урон: 4.72 (3.5*1.35)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0" 
+        ],
+        desc: "Иуда наносит высокий урон, но слаб по здоровью."
+      },
+
+      "Eve": {
+        name: "Ева (Eve)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/2/2d/Rep_%D0%95%D0%B2%D0%B0.png/revision/latest?cb=20210405112445&path-prefix=ru",
+        stats: [ "Здоровье: 2 красных сердца",
+          "Урон: 2.62 (3.5*0.75) / (*1.00 при 1 контейнере здоровья)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.23",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0" 
+        ],
+        desc: "Ева получает бонусы, когда её здоровье низкое."
+      },
+
+      "Unknown": {
+        name: "??? (Blue Baby)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/f/fc/Rep_%3F%3F%3F.png/revision/latest?cb=20210405112140&path-prefix=ru",
+        stats: [ "Здоровье: 3 синих сердца",
+          "Урон: 3.67 (3.5*1.05)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.1",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0" 
+        ],
+        desc: "??? не может получить красные сердца."
+      },
+
+      "Samson": {
+        name: "Самсон (Samson)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/3/31/Rep_%D0%A1%D0%B0%D0%BC%D1%81%D0%BE%D0%BD.png/revision/latest?cb=20210405211807&path-prefix=ru",
+        stats: [ "Здоровье: 3 красных сердца",
+          "Урон: 3.5 (*1.00)",
+          "Скорострельность: 2.50",
+          "Скорость: 1.1",
+          "Дальность: 5.0",
+          "Скорость слёз: 1.31",
+          "Удача: 0"
+        ],
+        desc: "Самсон становится сильнее при получении урона."
+      },
+
+      "Azazel": {
+        name: "Азазель (Azazel)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/c/c8/Rep_%D0%90%D0%B7%D0%B0%D0%B7%D0%B5%D0%BB%D1%8C.png/revision/latest?cb=20210405212925&path-prefix=ru",
+        stats: [ "Здоровье: 3 черных сердца",
+          "Урон: 5.25 = (3.5*1.5)",
+          "Скорострельность: 0.86",
+          "Скорость: 1.25",
+          "Дальность: 4.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Азазель может летать и стреляет лазером."
+      },
+
+      "Lazarus": {
+        name: "Лазарь (Lazarus)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/d/db/Rep_%D0%9B%D0%B0%D0%B7%D0%B0%D1%80%D1%8C.png/revision/latest?cb=20211115132748&path-prefix=ru",
+        stats: [ "Здоровье: 3 красных сердца",
+          "Урон: 3.5 = (3.5*1.0)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 4.5",
+          "Скорость слёз: 1",
+          "Удача: -1"
+        ],
+        desc: "Лазарь возрождается как Lazarus’ Risen."
+      },
+
+      "Eden": {
+        name: "Эдем (Eden)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/5/55/Rep_%D0%AD%D0%B4%D0%B5%D0%BC.png/revision/latest?cb=20210405213831&path-prefix=ru",
+        stats: [ "Здоровье: ???",
+          "Урон: 3.5 ± 1,0 (*1.00)",
+          "Скорострельность: 2.73 ± 0.75",
+          "Скорость: 1.00 ± 0.15",
+          "Дальность: 6.5 ± 1.5",
+          "Скорость слёз: 1 ± 0.25",
+          "Удача: 0 ± 1"
+        ],
+        desc: "Эдем генерирует случайные стартовые параметры."
+      },
+
+      "TheLost": {
+        name: "Потерянный (The Lost)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/1/15/Rep_%D0%9F%D0%BE%D1%82%D0%B5%D1%80%D1%8F%D0%BD%D0%BD%D1%8B%D0%B9.png/revision/latest?cb=20210405214057&path-prefix=ru",
+        stats: [ "Здоровье: отсутствует",
+          "Урон: 3.5 (*1.00)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "The Lost погибает от любого удара."
+      },
+
+      "Lilith": {
+        name: "Лилит (Lilith)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/3/33/Rep_%D0%9B%D0%B8%D0%BB%D0%B8%D1%82.png/revision/latest?cb=20210405214612&path-prefix=ru",
+        stats: [ "Здоровье: 1 красное и 2 черных сердца",
+          "Урон: 3.5 = (3.5*1.00)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Лилит взаимодействует с её спутниками."
+      },
+
+      "Keeper": {
+        name: "Хранитель (Keeper)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/0/0e/Rep_%D0%A5%D1%80%D0%B0%D0%BD%D0%B8%D1%82%D0%B5%D0%BB%D1%8C.png/revision/latest?cb=20210405214409&path-prefix=ru",
+        stats: [ "Здоровье: 2 монеты",
+          "Урон: 4.2 = (3.5*1.2)",
+          "Скорострельность: 1.06",
+          "Скорость: 0.9",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: -2"
+        ],
+        desc: "У Keeper механика, связанная с монетами."
+      },
+
+      "Apollyon": {
+        name: "Аполлион (Apollyon)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/e/e1/Rep_%D0%90%D0%BF%D0%BE%D0%BB%D0%BB%D0%B8%D0%BE%D0%BD.png/revision/latest?cb=20210405214247&path-prefix=ru",
+        stats: [ "Здоровье: 2 красных сердца",
+          "Урон: 3.5 (*1.00)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Аполлион начинает с активным предметом Void."
+      },
+
+      "TheForgotten": {
+        name: "Забытый (The Forgotten)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/d/d6/Rep_%D0%97%D0%B0%D0%B1%D1%8B%D1%82%D1%8B%D0%B9.png/revision/latest?cb=20210405214848&path-prefix=ru",
+        stats: [ "Здоровье: 2 костяных и 1 синее сердце",
+          "Урон: 5.25 (3.5*1.5) • 3.5",
+          "Скорострельность: 1.36 (2.73*0.5) • 2,73",
+          "Скорость: 1.00 • 1.30",
+          "Дальность: 6.5 • 6,5",
+          "Скорость слёз: 1 • 1",
+          "Удача: 0"
+        ],
+        desc: "The Forgotten — персонаж с двумя формами."
+      },
+
+      "Bethany": {
+        name: "Бетани (Bethany)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/0/0b/Rep_%D0%92%D0%B8%D1%84%D0%B0%D0%BD%D0%B8%D1%8F.png/revision/latest?cb=20210405215401&path-prefix=ru",
+        stats: [ "Здоровье: 3 красных сердца",
+          "Урон: 3.5 (*1.00)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Бетани взаимодействует с soul charges."
+      },
+
+      "JacobEsau": {
+        name: "Иаков & Исав (Jacob & Esau)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/5/5f/Rep_%D0%98%D0%B0%D0%BA%D0%BE%D0%B2_%D0%B8_%D0%98%D1%81%D0%B0%D0%B2.png/revision/latest?cb=20210405215416&path-prefix=ru",
+        stats: [ "Здоровье: 3 красных сердца / 1 красное и 1 синее сердце",
+          "Урон: 2.75 • 3.75",
+          "Скорострельность: 3.00 • 2.50",
+          "Скорость: 1.00 • 1.00",
+          "Дальность: 5.00 • 8.00",
+          "Скорость слёз: 1.15 • 0.85",
+          "Удача: 1.00 • -1.00"
+        ],
+        desc: "Два персонажа, здоровье и предметы делятся между ними."
+      },
+
+      // Альтернативные версии (Tainted)
+      "TaintedIsaac": {
+        name: "Таинственный Айзек (Tainted Isaac)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/b/ba/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%98%D1%81%D0%B0%D0%B0%D0%BA.png/revision/latest?cb=20210404142828&path-prefix=ru",
+        stats: [ "Здоровье: 3 красных сердца",
+          "Урон: 3.5",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Айзека с особым стилем."
+      },
+
+      "TaintedMagdalene": {
+        name: "Таинственная Магдалина (Tainted Magdalene)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/3/3b/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D0%B0%D1%8F_%D0%9C%D0%B0%D0%B3%D0%B4%D0%B0%D0%BB%D0%B8%D0%BD%D0%B0.png/revision/latest?cb=20210404153939&path-prefix=ru",
+        stats: [ "Здоровье: 2 красных сердца и 2 пустых контейнера",
+          "Урон: 2.62 (3.5*0.75)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Магдалины."
+      },
+
+      "TaintedCain": {
+        name: "Таинственный Каин (Tainted Cain)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/1/1a/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%9A%D0%B0%D0%B8%D0%BD.png/revision/latest?cb=20210404194216&path-prefix=ru",
+        stats: [ "Здоровье: 2 красных сердца",
+          "Урон: 3.5 (*1.20)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.3",
+          "Дальность: 4.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Каина."
+      },
+
+      "TaintedJudas": {
+        name: "Таинственный Иуда (Tainted Judas)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/0/0d/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%98%D1%83%D0%B4%D0%B0.png/revision/latest?cb=20210404204450&path-prefix=ru",
+        stats: [ "Здоровье: 2 черных сердца",
+          "Урон: 3.5 = (3.5*1.00)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.23",
+          "Дальность: 4.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Иуды."
+      },
+
+      "TaintedUnknown": {
+        name: "Таинственный ??? (Tainted Unknown)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/6/6e/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%3F%3F%3F.png/revision/latest?cb=20210404194740&path-prefix=ru",
+        stats: [ "Здоровье: 3 синих сердца",
+          "Урон: 3.5 = (3.5*1.00)",
+          "Скорострельность: 2.04",
+          "Скорость: 0.9",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия ???."
+      },
+
+      "TaintedEve": {
+        name: "Таинственная Ева (Tainted Eve)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/2/2d/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D0%B0%D1%8F_%D0%95%D0%B2%D0%B0.png/revision/latest?cb=20210404194914&path-prefix=ru",
+        stats: [ "Здоровье: 2 красных сердца",
+          "Урон: 4.2 = (3.5*1.2)",
+          "Скорострельность: 1.20",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Евы."
+      },
+
+      "TaintedSamson": {
+        name: "Таинственная Самсона (Tainted Samson)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/7/7e/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%A1%D0%B0%D0%BC%D1%81%D0%BE%D0%BD.png/revision/latest?cb=20210404195040&path-prefix=ru",
+        stats: [ "Здоровье: 3 красных сердца",
+          "Урон: 3.5 = (3.5*1.00)",
+          "Скорострельность: 2.50",
+          "Скорость: 1.00",
+          "Дальность: 5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Самсона."
+      },
+
+      "TaintedAzazel": {
+        name: "Таинственный Азазель (Tainted Azazel)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/6/6f/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%90%D0%B7%D0%B0%D0%B7%D0%B5%D0%BB%D1%8C.png/revision/latest?cb=20210511105517&path-prefix=ru",
+        stats: [ "Здоровье: 3 черных сердца",
+          "Урон: 5.25 = (3.5*1.5)",
+          "Скорострельность: 0.91",
+          "Скорость: 1.25",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Азазеля."
+      },
+
+      "TaintedLazarus": {
+        name: "Таинственный Лазарь (Tainted Lazarus)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/b/b5/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%9B%D0%B0%D0%B7%D0%B0%D1%80%D1%8C.png/revision/latest?cb=20211115132310&path-prefix=ru",
+        stats: [ "Здоровье: 3 красных сердца / 2 синих сердца",
+          "Урон: 3.5 (*1.0) • 5.25 (*1.5)",
+          "Скорострельность: 2.73 • 2.50",
+          "Скорость: 1.00 • 0.90",
+          "Дальность: 4.50 • 6.50",
+          "Скорость слёз: 1.00 • 1.00",
+          "Удача: 0.00 • -2.00"
+        ],
+        desc: "Tainted версия Лазаря."
+      },
+
+      "TaintedEden": {
+        name: "Таинственный Эдем (Tainted Eden)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/4/4a/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%AD%D0%B4%D0%B5%D0%BC.png/revision/latest?cb=20210404211134&path-prefix=ru",
+        stats: [ "Здоровье: ???",
+          "Урон: 3.5 ± 1.0 (*1)",
+          "Скорострельность: 2.73 ± 0.75",
+          "Скорость: 1 ± 0,15",
+          "Дальность: 6.5 ± ?",
+          "Скорость слёз: 1 ± 0.25",
+          "Удача: 0 ± 1"
+        ],
+        desc: "Tainted версия Эдема."
+      },
+      
+      "TaintedTheLost": {
+        name: "Таинственный Потерянный (Tainted The Lost)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/7/7c/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%9F%D0%BE%D1%82%D0%B5%D1%80%D1%8F%D0%BD%D0%BD%D1%8B%D0%B9.png/revision/latest?cb=20210404203643&path-prefix=ru",
+        stats: [ "Здоровье: отсутствует",
+          "Урон: 4.55 (3.5*1.3)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Потерянного."
+      },
+
+      "TaintedLilith": {
+        name: "Таинственная Лилит (Tainted Lilith)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/d/d0/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D0%B0%D1%8F_%D0%9B%D0%B8%D0%BB%D0%B8%D1%82.png/revision/latest?cb=20210404204653&path-prefix=ru",
+        stats: [ "Здоровье: 1 красное и 2 черных сердца",
+          "Урон: 3.5 (*1.00)",
+          "Скорострельность: 2.73",
+          "Скорость: 0.85",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Лилит."
+      },
+
+      "TaintedKeeper": {
+        name: "Таинственный Хранитель (Tainted Keeper)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/a/a3/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%A5%D1%80%D0%B0%D0%BD%D0%B8%D1%82%D0%B5%D0%BB%D1%8C.png/revision/latest?cb=20210404204024&path-prefix=ru",
+        stats: [ "Здоровье: 2 монеты",
+          "Урон: 3.5 = (3.5*1.0)",
+          "Скорострельность: 0.99",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: -2"
+        ],
+        desc: "Tainted версия Keeper."
+      },
+
+      "TaintedApollyon": {
+        name: "Таинственный Аполлион (Tainted Apollyon)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/4/4f/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%90%D0%BF%D0%BE%D0%BB%D0%BB%D0%B8%D0%BE%D0%BD.png/revision/latest?cb=20210404203744&path-prefix=ru",
+        stats: [ "Здоровье: 2 красных сердца",
+          "Урон: 3.5 = (3.5*1.0)",
+          "Скорострельность: 1.82",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Аполлиона."
+      },
+
+      "TaintedForgotten": {
+        name: "Таинственный Забытый (Tainted Forgotten)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/4/42/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%97%D0%B0%D0%B1%D1%8B%D1%82%D1%8B%D0%B9.png/revision/latest?cb=20210404204823&path-prefix=ru",
+        stats: [ "Здоровье: 3 синих сердца",
+          "Урон: 5.25 (*1.50) • —",
+          "Скорострельность: 1.36 • —",
+          "Скорость: — • 1.0",
+          "Дальность: 6.5 • —",
+          "Скорость слёз: 1 • —",
+          "Удача: 0 • 0"
+        ],
+        desc: "Tainted версия Забытого."
+      },
+
+      "TaintedBethany": {
+        name: "Таинственный Забытый (Tainted Bethany)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/c/cb/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D0%B0%D1%8F_%D0%92%D0%B8%D1%84%D0%B0%D0%BD%D0%B8%D1%8F.png/revision/latest?cb=20210404204906&path-prefix=ru",
+        stats: [ "Здоровье: 3 синих сердца",
+          "Урон: 3.5 (*1.00)",
+          "Скорострельность: 2.73",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Бетани."
+      },
+
+      "TaintedJacob": {
+        name: "Таинственный Иаков (Tainted Jacob)",
+        img: "https://static.wikia.nocookie.net/bindingofisaac/images/e/ef/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%D0%98%D0%B0%D0%BA%D0%BE%D0%B2.png/revision/latest?cb=20210404210556&path-prefix=ru",
+        stats: [ "Здоровье: 3 красных сердца",
+          "Урон: 3.5 (*1.00)",
+          "Скорострельность: 3",
+          "Скорость: 1.00",
+          "Дальность: 6.5",
+          "Скорость слёз: 1",
+          "Удача: 0"
+        ],
+        desc: "Tainted версия Иакова."
+      }
+    };
+
+    // Модальное окно
+    function openModalFor(key) {
+  const data = characters[key];
+  if (!data) return;
+  const modal = document.getElementById('char-modal');
+  const modalName = document.getElementById('modal-name');
+  const modalImg = document.getElementById('modal-img');
+  const modalStats = document.getElementById('modal-stats');
+  const modalDesc = document.getElementById('modal-desc');
+
+  modalName.textContent = data.name;
+  if (data.img) {
+    modalImg.src = data.img;
+    modalImg.alt = data.name;
+    modalImg.style.display = "";
+  } else {
+    modalImg.style.display = "none";
+  }
+
+  modalStats.innerHTML = ""; // очищаем
+
+data.stats.forEach(statLine => {
+  const statName = statLine.split(":")[0].trim();
+  const statValue = statLine.split(":")[1]?.trim() || "";
+  const icon = statIcons[statName] || "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Question_mark.svg/16px-Question_mark.svg.png";
+
+  const wrapper = document.createElement('div');
+  wrapper.classList.add('stat-line');
+
+  wrapper.innerHTML = `
+    <img src="${icon}" alt="${statName}" class="stat-icon">
+    <span><strong>${statName}:</strong> ${statValue}</span>
+  `;
+
+  modalStats.appendChild(wrapper);
+});
+
+  modalDesc.innerHTML = "";
+  const pdesc = document.createElement('p');
+  pdesc.textContent = data.desc;
+  modalDesc.appendChild(pdesc);
+
+  modal.style.display = 'block';
+}
+
+    // Модальное окно обычных персонажей
+    document.getElementById('grid-normal').addEventListener('click', event => {
+      const card = event.target.closest('.character-card');
+      if (!card) return;
+      openModalFor(card.getAttribute('data-char'));
+    });
+
+    // Модальное окно порченых персонажей
+    document.getElementById('grid-tainted').addEventListener('click', event => {
+      const card = event.target.closest('.character-card');
+      if (!card) return;
+      openModalFor(card.getAttribute('data-char'));
+    });
+
+    // Закрытие модального окна (крестик)
+    document.getElementById('modal-close').addEventListener('click', () => {
+      document.getElementById('char-modal').style.display = 'none';
+    });
+
+    // Закрывает модальное окно при нажатии за его границы (заместо крестика)
+    window.addEventListener('click', e => {
+      if (e.target === document.getElementById('char-modal')) {
+        document.getElementById('char-modal').style.display = 'none';
+      }
+    });
+
+    // Анимация cover
+    const cover = document.querySelector('.hero .cover');
+    cover.addEventListener('mousemove', e => {
+      const rect = cover.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const dx = (x - cx) / cx;
+      const dy = (y - cy) / cy;
+      const rotateX = dy * 10;
+      const rotateY = dx * -10;
+      cover.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(0.97)`;
+      cover.style.filter = 'brightness(0.9)';
+    });
+    cover.addEventListener('mouseleave', () => {
+      cover.classList.add('leave');
+      setTimeout(() => {
+        cover.classList.remove('leave');
+        cover.style.transform = '';
+        cover.style.filter = '';
+      }, 200);
+    });
+  </script>
+
+</body>
+</html>

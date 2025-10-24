@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Монстры по этажам — The Binding Of Isaac Wiki</title>
+
+  <link rel="icon" href="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" type="image/png">
+
+  <style>
+    :root{
+      --bg:#0f1720;
+      --card:#111827;
+      --muted:#9aa4b2;
+      --accent:#00bfff;
+      --accent-glow:#00bfff;
+    }
+
+    html, body {
+      margin: 0;
+      font-family: Inter,Segoe UI,Helvetica,Arial,sans-serif;
+      min-height: 100%;
+      background: linear-gradient(180deg, #0f1720, #071020, #000000 70%, #000000 100%);
+      color: #e6eef6;
+    }
+
+    *{box-sizing:border-box}
+    a{color:inherit;text-decoration:none}
+
+    .top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .logo{
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      overflow:hidden;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+      transition:transform 0.4s ease, box-shadow 0.4s ease;
+      cursor:pointer;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition:transform 0.4s ease;
+    }
+    .logo:hover{
+      transform:rotate(5deg) scale(1.05);
+      box-shadow:0 0 20px rgba(255,255,255,0.2);
+    }
+    .logo:hover img{
+      transform:scale(1.1);
+    }
+    .brand h1{
+      font-size:18px;
+      margin:0;
+    }
+    .brand p{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .container {
+  max-width: 1200px;
+  margin: 48px auto;
+  padding: 0 36px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  padding-top: 100px;
+}
+
+    .hero {
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 28px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.03);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: fadeIn 1s ease forwards;
+      max-width: 900px;
+      margin: 0 auto 40px auto;
+      text-align: center;
+    }
+
+    .hero .cover {
+      width: 100%;
+      max-width: 900px;
+      height: 300px;
+      margin: 0 auto;
+      perspective: 800px;
+    }
+
+    .hero .cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      transition: transform 0.2s ease, filter 0.2s ease;
+      display: block;
+    }
+
+    .hero .info h2 {
+      margin: 0 0 12px 0;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      user-select: none;
+    }
+
+    /* Поиск */
+    .search-box {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(6px);
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    /* Этаж */
+    .floor-section {
+      margin-top: 40px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .floor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 22px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.03);
+      transition: background 0.3s;
+    }
+
+    .floor-header:hover {
+      background: rgba(0,191,255,0.08);
+    }
+
+    .floor-header h3 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    .toggle-icon {
+      font-size: 20px;
+      color: var(--accent-glow);
+      transition: transform 0.3s ease;
+    }
+
+    .floor-section.collapsed .toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+      padding: 20px;
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    .floor-section.collapsed .grid {
+      display: none;
+    }
+
+    .monster-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .monster-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 12px 28px rgba(0,191,255,0.4), 0 0 40px rgba(0,191,255,0.2) inset;
+    }
+
+    .monster-card img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      margin-bottom: 14px;
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.1));
+    }
+
+    .monster-card h4 {
+      font-size: 18px;
+      margin: 6px 0 10px;
+    }
+
+    .monster-card p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: var(--accent);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 20px;
+      transition: all 0.3s ease;
+    }
+    .back-button:hover{
+      background: rgba(0,191,255,0.1);
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .logo { width: 44px; height: 44px; }
+      .monster-card img { width: 72px; height: 72px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top">
+    <div class="brand">
+        <a href="../Isaac.html" class="back-button">← Назад</a>
+      <div class="logo">
+        <a href="../Isaac.html">
+          <img src="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" alt="Isaac logo">
+        </a>
+      </div>
+      <div>
+        <h1>The Binding Of Isaac — Википедия</h1>
+        <p>Фанатская википедия / Монстры по этажам</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section>
+
+      <div class="hero">
+        
+        <div class="info">
+          <span class="pill">Категория</span>
+          <h2>Монстры по этажам</h2>
+          <div class="cover">
+            <img src="https://yandex-images.clstorage.net/URk96u390/b74258U_4P/ziaGfqRngaLh4l4ojDW1MvGCXg_3J54ehSQ3WBNVX9qWPSfNLRniYtLdLh2SsFYip4e2efnfdWpB1sSYZg78Woh_wifhJoKm6PAXNJ52pT_8wVIZpWmaUdcuNw8YaDH44B0d4Bk1wxypnH1Bl-IcPuSQ3BfuuzENS8a8nlMUhDvNNbFavlnpufbUCT6qOZId8dh8Le9lkW6AFl5felEg_8A-MtoRPeUcqIFZe5rTB1HZjOwEg7oBEFfytpVNGaUC7yO9S51OzK7x_REmrjOSMOPlZC3ZepVRjQpiWE5CBOPbLw_hAR3PEZCzZkCj1Q1c0JLiBZq9CDJL2pu_RiqeP_sho1ayY9yo9sAWAoIaqxDN43cO5XG2WaQxcGd6Ty_r1BQ23iUx_iWoilFdhs0rV9SJ-QO6uiIdS_WWjV0SlQDwA5dvkXPbmPPFOiOXEb4x5NhiG9d9nEqdMmF7aFIE-Pk8LfwoPcABsoxtSZfyBULCq9IfpqQgDXbFu4hdNLsW4gC8SYZC6rj35xkGni2-NMv9dznmbL1MmDhac39fAtrsExPtJCXiJ52mX3WpyQZo3q3nCqO2MxhkwZuNXhqIKfIDt1eBbMarz9wxBK8UnQLa2lUO4H6Pd4QtW1debxT11T4V4jI77C20t0ZEgMkyYN-k6CaJvBQWYdyghEIbhw3uDpFNk2XjiOPzFBuIAb4H6thDAtNapWSbI31TX1og4OgxOOUyKfU0oq5pTIDyAFjRs9Iwpp0FFmH-oqRPOZMA6iKidYN89o7HxyQroAGlJtvjRBLJeqZrixh8fV1SCf_xDhb7LDjAN4SHakmGyiV15ZXOHI-LCyVz1rSxWAShFO4PolaGRuWCyvs_CJUSuifQw0MS4WeReK8uelFyVQ3J9AUnwC0dzwGQkUZshd00RtiMwCW9mjcJSMCBiXw6uDrbH5FsonPFpvTZCjS_MIgW5fZCL8VukWujElt4c2I" alt="Cover Image">
+          </div>
+          <p class="small">Эта страница показывает, какие монстры встречаются на каждом этаже.  
+          Кликни по названию этажа, чтобы развернуть или свернуть список монстров.</p>
+        </div>
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="monsterSearch" placeholder="Поиск монстра по имени...">
+      </div>
+
+      <!-- ЭТАЖИ -->
+      <div class="floor-section" data-floor="Бейсмент">
+        <div class="floor-header">
+          <h3>Подвал (The Basement)</h3>
+          <span class="toggle-icon">▼</span>
+        </div>
+        <div class="grid">
+          <div class="monster-card" data-name="Fly">
+            <img src="https://static.wikia.nocookie.net/bindingofisaac/images/2/22/Black_Fly.png/revision/latest?cb=20190823065448&path-prefix=ru" alt="Fly">
+            <h4>Fly</h4>
+            <p>Обычные мухи, самые простые враги в игре.</p>
+          </div>
+          <div class="monster-card" data-name="Hopper">
+            <img src="https://static.wikia.nocookie.net/bindingofisaac/images/9/91/HopperRebirth.png/revision/latest?cb=20190823073517&path-prefix=ru" alt="Hopper">
+            <h4>Hopper</h4>
+            <p>Прыгает по комнате и наносит контактный урон.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="floor-section" data-floor="Кэйвс">
+        <div class="floor-header">
+          <h3>Пещеры (The Caves)</h3>
+          <span class="toggle-icon">▼</span>
+        </div>
+        <div class="grid">
+          <div class="monster-card" data-name="Leech">
+            <img src="https://static.wikia.nocookie.net/bindingofisaac/images/2/2a/Leech_Rep.png/revision/latest?cb=20210625074652&path-prefix=ru" alt="Leech">
+            <h4>Leech</h4>
+            <p>Медленно движется к игроку, оставляя за собой след крови.</p>
+          </div>
+          <div class="monster-card" data-name="Maw">
+            <img src="https://static.wikia.nocookie.net/bindingofisaac/images/1/18/Maw.png/revision/latest?cb=20190823075059&path-prefix=ru" alt="Maw">
+            <h4>Maw</h4>
+            <p>Летающий враг, выпускающий огненные кольца.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="floor-section" data-floor="Депс">
+        <div class="floor-header">
+          <h3>Глубины (The Depths)</h3>
+          <span class="toggle-icon">▼</span>
+        </div>
+        <div class="grid">
+          <div class="monster-card" data-name="Pooter">
+            <img src="https://static.wikia.nocookie.net/bindingofisaac/images/2/26/Pooter.png/revision/latest/scale-to-width-down/40?cb=20190823065809&path-prefix=ru" alt="Pooter">
+            <h4>Pooter</h4>
+            <p>Стреляет слезами, быстро перемещается в воздухе.</p>
+          </div>
+          <div class="monster-card" data-name="Charger">
+            <img src="https://static.wikia.nocookie.net/bindingofisaac/images/5/57/Chargeri.png/revision/latest?cb=20190823082502&path-prefix=ru" alt="Charger">
+            <h4>Charger</h4>
+            <p>Бросается на игрока с высокой скоростью.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    // Поиск
+    const searchInput = document.getElementById('monsterSearch');
+    const floorSections = document.querySelectorAll('.floor-section');
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim().toLowerCase();
+
+      floorSections.forEach(section => {
+        const cards = section.querySelectorAll('.monster-card');
+        let anyVisible = false;
+
+        cards.forEach(card => {
+          const name = card.dataset.name.toLowerCase();
+          if (name.includes(query)) {
+            card.style.display = 'block';
+            anyVisible = true;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        section.style.display = anyVisible || query === '' ? 'block' : 'none';
+      });
+    });
+
+    // Сворачивание этажей
+    const floorHeaders = document.querySelectorAll('.floor-header');
+    floorHeaders.forEach(header => {
+      header.addEventListener('click', () => {
+        const section = header.parentElement;
+        section.classList.toggle('collapsed');
+      });
+    });
+
+    // Эффект наклона изображения
+    const coverImg = document.querySelector('.hero .cover img');
+
+    coverImg.addEventListener('mousemove', e => {
+      const rect = coverImg.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const dx = (x - cx) / cx;
+      const dy = (y - cy) / cy;
+
+      const rotateX = dy * 10;
+      const rotateY = dx * -10;
+
+      coverImg.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(0.97)`;
+      coverImg.style.filter = 'brightness(0.9)';
+    });
+
+    coverImg.addEventListener('mouseleave', () => {
+      coverImg.style.transform = '';
+      coverImg.style.filter = '';
+    });
+  </script>
+
+</body>
+</html>

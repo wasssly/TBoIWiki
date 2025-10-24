@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Комнаты — The Binding Of Isaac</title>
+  <link rel="icon" href="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" type="image/png">
+
+  <style>
+  :root {
+    --bg: #0f1720;
+    --card: #111827;
+    --muted: #9aa4b2;
+    --accent: #00bfff;
+    --glass: rgba(255,255,255,0.03);
+  }
+  html, body {
+    margin: 0;
+    font-family: Inter,Segoe UI,Helvetica,Arial,sans-serif;
+    min-height: 100%;
+    background: linear-gradient(180deg, #0f1720, #071020, #000000 70%, #000000 100%);
+    color: #e6eef6;
+  }
+  * { box-sizing: border-box; }
+  a { color: inherit; text-decoration: none; }
+
+  .top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+  }
+  .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .logo:hover {
+    transform: rotate(5deg) scale(1.05);
+    box-shadow: 0 0 20px rgba(255,255,255,0.2);
+  }
+  .logo:hover img {
+    transform: scale(1.1);
+  }
+  .brand h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+  .brand p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .container {
+  max-width: 1236px;
+  margin: 20px auto;
+  padding: 0 18px;
+  padding-top: 100px;
+}
+
+  .centered-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 18px;
+    padding: 24px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.03);
+    animation: fadeInHero 1s ease forwards;
+  }
+
+  .hero-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+  }
+
+  .hero-image img:hover {
+    transform: scale(1.02);
+  }
+
+  .hero-text h2 {
+    margin: 8px 0;
+  }
+
+  .hero-text p {
+    max-width: 700px;
+    margin: 0 auto;
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.03);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+  font-size: 17px;
+  color: #e6eef6;
+}
+
+table th, table td {
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 16px 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+table th {
+  background: var(--card);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+table td img {
+  vertical-align: middle;
+  margin-right: 12px;
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+
+
+  /* Эффект наведения курсора мыши на строки таблицы */
+  tbody tr {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  tbody tr:hover {
+    background-color: rgba(14, 165, 233, 0.12);
+    transform: scale(1.01);
+    box-shadow: 0 0 8px rgba(14, 165, 233, 0.2);
+  }
+
+  tbody tr:active {
+  transform: scale(0.98);
+  background-color: rgba(14, 165, 233, 0.2);
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background-color: var(--card);
+    margin: 8% auto;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+    width: 90%;
+    max-width: 1000px;
+    color: #e6eef6;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,191,255,0.2);
+    animation: fadeInModal 0.4s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+  }
+  
+  .modalImage {
+  display: block;
+  max-width: 90vw;
+  max-height: 70vh;
+  width: 800px;
+  height: 500px;
+  margin: 0 auto 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  cursor: zoom-in;
+  transition: transform 0.3s ease;
+  }
+
+  .modalImage.zoomed {
+  transform: scale(1.5);  /* Увеличиваем в 1.5 раза */
+  cursor: zoom-out;
+  }
+
+  @keyframes fadeInModal {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 24px;
+    color: #aaa;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: color 0.3s ease;
+  }
+
+  .close-btn:hover {
+    color: #fff;
+  }
+
+  .back-button {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: var(--accent);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 20px;
+      transition: all 0.3s ease;
+    }
+    .back-button:hover{
+      background: rgba(0,191,255,0.1);
+    }
+
+  .tilt {
+  transition: transform 0.3s ease, filter 0.3s ease;
+  will-change: transform;
+}
+
+  @media (max-width: 900px) {
+    .container {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <header class="top">
+    <div class="brand">
+        <a href="../Isaac.html" class="back-button">← Назад</a>
+      <div class="logo">
+        <a href="../Isaac.html">
+          <img src="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" alt="Isaac logo">
+        </a>
+      </div>
+      <div>
+        <h1>The Binding Of Isaac — Википедия</h1>
+        <p>Фанатская википедия / Комнаты</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero centered-hero">
+      <div class="hero-text">
+        <span class="pill">Комнаты</span>
+        <h2>Все типы комнат в игре</h2>
+        <div class="hero-image tilt">
+        <img 
+          src="https://external-preview.redd.it/oSFaNCK6F9mftPLhKXsI-JDOYgxJXCrZgcAXj53xs2Q.png?auto=webp&s=ebd4d090ba8a99fe1ee055918b8d096abe450052" 
+          alt="Пример комнат из Isaac"
+          style="max-width: 70%; height: auto; border-radius: 12px; margin-top: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+        </div>
+        <p>Вы можете просматривать подробности каждой комнаты. Просто нажмите на интересующую Вас комнату.</p>
+      </div>
+    </section>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Название (RU)</th>
+          <th>Название (EN)</th>
+          <th>Как попасть</th>
+          <th>Описание</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- Сокровищница -->
+        <tr data-detail="Содержит случайный предмет, необходима для прокачки. Иногда может быть два предмета." 
+        data-img="https://static.wikia.nocookie.net/bindingofisaac/images/9/92/Treasure_0.png/revision/latest?cb=20210606072308&path-prefix=ru">
+          <td><img src="https://static.wikia.nocookie.net/bindingofisaac/images/0/04/Doorroom1.png/revision/latest/scale-to-width-down/70?cb=20161102100335&path-prefix=ru">Сокровищница</td>
+          <td>Treasure Room</td>
+          <td>Ключ</td>
+          <td>Содержит случайный предмет.</td>
+        </tr>
+
+        <!-- Секретная -->
+        <tr data-detail="Скрытая комната, обычно соединена с тремя другими. Внутри могут быть монеты, аркадные автоматы или мини-боссы."
+        data-img="https://static.wikia.nocookie.net/bindingofisaac/images/0/09/Secret_38_%28Fixed_Wooden_Chest%29.png/revision/latest?cb=20210606120630&path-prefix=ru">
+          <td><img src="https://static.wikia.nocookie.net/bindingofisaac/images/c/ca/Doorroom17.png/revision/latest/scale-to-width-down/70?cb=20210521045420&path-prefix=ru">Секретная комната</td>
+          <td>Secret Room</td>
+          <td>Бомба</td>
+          <td>Содержит предметы, артефакт или врагов.</td>
+        </tr>
+
+        <!-- Проклятая -->
+        <tr data-detail="Если вы входите без красных сердец или после получения урона — комната откроется."
+        data-img="https://static.wikia.nocookie.net/bindingofisaac/images/a/a6/Cursed_0.png/revision/latest?cb=20210610195246&path-prefix=ru">
+          <td><img src="https://static.wikia.nocookie.net/bindingofisaac/images/3/34/Doorroom7.png/revision/latest/scale-to-width-down/70?cb=20161102100338&path-prefix=ru">Проклятая комната</td>
+          <td>Curse Room</td>
+          <td>Повреждение</td>
+          <td>Может содержать артефакт, предметы или врагов.</td>
+        </tr>
+
+        <!-- Магазин -->
+        <tr data-detail="В Магазине можно купить подбираемые предметы и артефакты."
+        data-img="https://static.wikia.nocookie.net/bindingofisaac/images/a/a3/Магазин_Rebirth.png/revision/latest?cb=20161031140322&path-prefix=ru">
+          <td><img src="https://static.wikia.nocookie.net/bindingofisaac/images/c/c4/Rdoorroom2.png/revision/latest/scale-to-width-down/70?cb=20210424182528&path-prefix=ru">Магазин</td>
+          <td>Shop</td>
+          <td>Ключ</td>
+          <td>Содержит случайный предмет.</td>
+        </tr>
+
+        <!-- Библиотека -->
+        <tr data-detail="Как правило, в комнате стоят пьедесталы с разными книгами."
+        data-img="https://static.wikia.nocookie.net/bindingofisaac/images/d/d7/Библиотека_rebirth.png/revision/latest?cb=20161030130237&path-prefix=ru">
+          <td><img src="https://static.wikia.nocookie.net/bindingofisaac/images/0/00/Rdoorroom6.png/revision/latest/scale-to-width-down/70?cb=20210507111959&path-prefix=ru">Библиотека</td>
+          <td>Library</td>
+          <td>Ключ</td>
+          <td>Содержит книги.</td>
+        </tr>
+
+        <!-- Аркада -->
+        <tr data-detail="Комната представляет собой сбор различных автоматов и попрошаек, и нацелена на то, чтобы потратить лишние монеты на полезные расходники или, если повезёт, артефакты."
+        data-img="https://static.wikia.nocookie.net/bindingofisaac/images/1/13/Игровая_комната_Rebirth.png/revision/latest?cb=20161101115724&path-prefix=ru">
+          <td><img src="https://static.wikia.nocookie.net/bindingofisaac/images/b/b4/Doorroom3.png/revision/latest/scale-to-width-down/70?cb=20161102100336&path-prefix=ru">Аркада</td>
+          <td>Arcade</td>
+          <td>Монета</td>
+          <td>Содержит автоматы и попрошаек.</td>
+        </tr>
+
+        <!-- Комната босса -->
+        <tr data-detail="В комнате всегда обитает один или несколько боссов. После попадания в комнату, выход блокируется до тех пор, пока босс не будет повержен."
+        data-img="https://static.wikia.nocookie.net/bindingofisaac/images/6/66/Комната_с_боссом_Rebirth.png/revision/latest?cb=20161101123349&path-prefix=ru">
+          <td><img src="https://static.wikia.nocookie.net/bindingofisaac/images/3/35/Doorroom4.png/revision/latest/scale-to-width-down/70?cb=20161102100336&path-prefix=ru">Комната босса</td>
+          <td>Boss Room</td>
+          <td>Вход</td>
+          <td>Содержит босса и артефакт. Может содержать врагов и предметы.</td>
+        </tr>
+
+        <!-- Комната жертвоприношений -->
+        <tr data-detail="Представляет из себя комнату с шипами по центру. При проходе по шипам наносится урон в полное сердце."
+        data-img="https://static.wikia.nocookie.net/bindingofisaac/images/c/c1/SacrificeRooms.jpg/revision/latest?cb=20210506101323&path-prefix=ru">
+          <td><img src="https://static.wikia.nocookie.net/bindingofisaac/images/2/2d/Rdoorroom8.png/revision/latest/scale-to-width-down/70?cb=20210521042846&path-prefix=ru">Комната жертвоприношений</td>
+          <td>Sacrifice Room</td>
+          <td>Вход, повреждение</td>
+          <td>Может содержать предметы и боссов.</td>
+        </tr>
+
+        <!-- Комната Дьявола -->
+        <tr data-detail="После убийства босса может появиться дверь в эту комнату, если соблюдены некоторые условия. В комнате можно совершить сделку с Дьяволом, обменяв здоровье на артефакты."
+        data-img="https://static.wikia.nocookie.net/bindingofisaac/images/d/d9/Devil_0.png/revision/latest?cb=20210606133232&path-prefix=ru">
+          <td><img src="https://static.wikia.nocookie.net/bindingofisaac/images/5/52/Doorroom15.png/revision/latest/scale-to-width-down/70?cb=20210507132259&path-prefix=ru">Комната Дьявола</td>
+          <td>Devil Room</td>
+          <td>Вход, шанс</td>
+          <td>Может содержать артефакты, предметы или врагов.</td>
+        </tr>
+
+        <!-- Комната ангела -->
+        <tr data-detail="После убийства босса может появиться дверь в эту комнату, если соблюдены некоторые условия. В комнате можно взять ангельские артефакты."
+        data-img="https://static.wikia.nocookie.net/bindingofisaac/images/a/af/Angel_17.png/revision/latest?cb=20210606154112&path-prefix=ru">
+          <td><img src="https://static.wikia.nocookie.net/bindingofisaac/images/f/fe/Doorroom16.png/revision/latest/scale-to-width-down/70?cb=20210507133544&path-prefix=ru">Комната ангела</td>
+          <td>Angel Room</td>
+          <td>Вход, шанс</td>
+          <td>Содержит предметы или артефакты.</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </main>
+
+  <!-- Модал -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeBtn">✕</span>
+      <h3 id="modalTitle">Название</h3>
+      <img id="modalImage">
+      <p id="modalDetail">Описание...</p>
+    </div>
+  </div>
+
+  <script>
+
+    // Модальное окно
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDetail = document.getElementById("modalDetail");
+    const modalImage = document.getElementById("modalImage");
+
+modalImage.addEventListener("click", () => {
+  modalImage.classList.toggle("zoomed");
+});
+
+// 3D Эффект при наведении на лого
+document.querySelectorAll('.tilt').forEach(tiltElement => {
+    tiltElement.addEventListener('mousemove', e => {
+      const rect = tiltElement.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const dx = (x - rect.width / 2) / (rect.width / 2);
+      const dy = (y - rect.height / 2) / (rect.height / 2);
+      const rotateX = dy * 10;
+      const rotateY = dx * -10;
+      tiltElement.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(0.97)`;
+      tiltElement.style.transition = 'transform 0.1s ease';
+      tiltElement.style.filter = 'brightness(0.95)';
+    });
+
+    tiltElement.addEventListener('mouseleave', () => {
+      tiltElement.style.transform = '';
+      tiltElement.style.filter = '';
+    });
+  });
+
+    document.querySelectorAll("tbody tr").forEach(row => {
+  row.addEventListener("click", () => {
+    modalTitle.textContent = row.querySelector("td").innerText;
+    modalDetail.textContent = row.dataset.detail;
+    
+    // Получаем src изображения из data-атрибута
+    const imgSrc = row.dataset.img;
+    if(imgSrc) {
+      modalImage.src = imgSrc;
+      modalImage.style.display = "block";
+    } else {
+      modalImage.style.display = "none";
+    }
+
+    modal.style.display = "flex";
+  });
+});
+
+    document.getElementById("closeBtn").addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    window.addEventListener("click", e => {
+      if (e.target === modal) modal.style.display = "none";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Боссы и мини-боссы — The Binding Of Isaac</title>
+
+  <link rel="icon" href="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" type="image/png">
+
+  <style>
+    :root {
+      --bg: #0c1017;
+      --card: #151b24;
+      --muted: #9aa4b2;
+      --accent: #00bfff;
+      --accent-glow: #00bfff;
+      --border: rgba(255,255,255,0.05);
+    }
+
+    html, body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at 50% 20%, #0f1720, #000000 90%);
+      color: #e6eef6;
+    }
+
+    * { box-sizing: border-box; }
+    a { color: inherit; text-decoration: none; }
+
+    .top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .logo{
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      overflow:hidden;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+      transition:transform 0.4s ease, box-shadow 0.4s ease;
+      cursor:pointer;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition:transform 0.4s ease;
+    }
+    .logo:hover{
+      transform:rotate(5deg) scale(1.05);
+      box-shadow:0 0 20px rgba(255,255,255,0.2);
+    }
+    .logo:hover img{
+      transform:scale(1.1);
+    }
+    .brand h1{
+      font-size:18px;
+      margin:0;
+    }
+    .brand p{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .container {
+  max-width: 1200px;
+  margin: 48px auto;
+  padding: 0 36px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  padding-top: 100px;
+}
+
+    .hero {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 32px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: fadeIn 1s ease forwards;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .hero .boss-cover {
+      width: 100%;
+      max-width: 900px;
+      height: 350px;
+      border-radius: 16px;
+      background-image: url('https://files.donationalerts.com/uploads/images/7914686/1701115693_new_preview_p1_3602912_01700c0e.jpg');
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.2s ease, filter 0.2s ease;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .floor-section {
+      border-radius: 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+
+    .floor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 22px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.03);
+      transition: background 0.3s;
+    }
+
+    .floor-header:hover {
+      background: rgba(0,191,255,0.08);
+    }
+
+    .floor-header h3 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--accent);
+    }
+
+    .toggle-icon {
+      font-size: 20px;
+      color: var(--accent-glow);
+      transition: transform 0.3s ease;
+    }
+
+    .floor-section.collapsed .toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .boss-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+      padding: 20px;
+    }
+
+    .floor-section.collapsed .boss-grid {
+      display: none;
+    }
+
+    .boss-card {
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .boss-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 12px 28px rgba(0,191,255,0.4), 0 0 40px rgba(0,191,255,0.2) inset;
+    }
+
+    .boss-card img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 14px;
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.1));
+    }
+
+    .boss-card h4 {
+      font-size: 18px;
+      margin: 6px 0 10px;
+    }
+
+    .boss-card p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: var(--accent);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 20px;
+      transition: all 0.3s ease;
+    }
+    .back-button:hover{
+      background: rgba(0,191,255,0.1);
+    }
+
+    .search-box {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto 20px auto;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(6px);
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+      <a href="../Isaac.html" class="back-button">← Назад</a>
+    <div class="logo">
+      <a href="../Isaac.html">
+        <img src="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" alt="Isaac logo">
+      </a>
+    </div>
+    <div>
+      <h1>The Binding Of Isaac — Википедия</h1>
+      <p>Фанатская википедия / Боссы и мини-боссы</p>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <h2>Боссы и мини-боссы по этажам</h2>
+    <div class="boss-cover" aria-hidden="true"></div>
+    <p>Здесь вы найдёте всех основных боссов, распределённых по этажам. Каждый уровень игры имеет уникальный набор врагов.</p>
+  </section>
+
+  <div class="search-box">
+    <input type="text" id="bossSearch" placeholder="Поиск босса по имени...">
+  </div>
+
+  <!-- Этажи с боссами -->
+  <section class="floor-section" data-floor="Basement">
+    <div class="floor-header">
+      <h3>The Basement / The Cellar</h3>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="boss-grid">
+      <div class="boss-card" data-name="Monstro">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_Monstro_ingame.png?1ae21c" alt="Monstro">
+        <h4>Monstro</h4>
+        <p>Прыгает и стреляет кровавыми снарядами.</p>
+      </div>
+      <div class="boss-card" data-name="Larry Jr">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_Larry_Jr._ingame.png?358ef3" alt="Larry Jr">
+        <h4>Larry Jr.</h4>
+        <p>Змееобразный червь, оставляющий след из экскрементов.</p>
+      </div>
+      <div class="boss-card" data-name="Dingle">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_Dingle_ingame.png?437455&format=original" alt="Dingle">
+        <h4>Dingle</h4>
+        <p>Атакует рывками и выстрелами.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="floor-section" data-floor="Caves">
+    <div class="floor-header">
+      <h3>The Caves / Catacombs</h3>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="boss-grid">
+      <div class="boss-card" data-name="Mega Fatty">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_Mega_Fatty_ingame.png?adcc31" alt="Mega Fatty">
+        <h4>Mega Fatty</h4>
+        <p>Тяжёлый и медленный, но способен быстро прыгать и затягивать игрока.</p>
+      </div>
+      <div class="boss-card" data-name="Chub">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_Chub_ingame.png?f6855c" alt="Chub">
+        <h4>Chub</h4>
+        <p>Быстро движется по прямой и поглощает всё на своём пути.</p>
+      </div>
+      <div class="boss-card" data-name="Gurdy">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_Gurdy_ingame.png?e8fd86" alt="Gurdy">
+        <h4>Gurdy</h4>
+        <p>Неподвижный босс, призывает врагов и стреляет залпами снарядов.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="floor-section" data-floor="Depths">
+    <div class="floor-header">
+      <h3>The Depths / Necropolis</h3>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="boss-grid">
+      <div class="boss-card" data-name="Mom">
+        <img src="https://fiendfolio.wiki.gg/images/c/ca/BossMom.png?c1df41" alt="Mom">
+        <h4>Mom</h4>
+        <p>Главный босс глубин, нападает ногой и выпускает врагов из дверей.</p>
+      </div>
+      <div class="boss-card" data-name="Mom’s Heart">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_Mom%27s_Heart_ingame.png?b39920" alt="Mom’s Heart">
+        <h4>Mom’s Heart</h4>
+        <p>Финальный враг базовой игры. Стреляет кровавыми волнами по всей арене.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="floor-section" data-floor="Womb">
+    <div class="floor-header">
+      <h3>The Womb / Utero</h3>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="boss-grid">
+      <div class="boss-card" data-name="It Lives">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_It_Lives%21_ingame.png?a32dd7" alt="It Lives">
+        <h4>It Lives</h4>
+        <p>Обновлённая версия сердца Мамы с более сложными атаками.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="floor-section" data-floor="Sheol">
+    <div class="floor-header">
+      <h3>Sheol / Cathedral</h3>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="boss-grid">
+      <div class="boss-card" data-name="Satan">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_Satan_ingame.png?dbb926" alt="Satan">
+        <h4>Satan</h4>
+        <p>Владыка ада, сражается в несколько фаз, включая гигантскую голову.</p>
+      </div>
+      <div class="boss-card" data-name="Isaac">
+        <img src="https://static.wikia.nocookie.net/bindingofisaac/images/f/f2/Isaac_ingame.png/revision/latest?cb=20210528085847&path-prefix=ru" alt="Isaac">
+        <h4>Isaac</h4>
+        <p>Босс уровня Cathedral, использует светлые слёзы и телепортацию.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="floor-section" data-floor="Chest">
+    <div class="floor-header">
+      <h3>The Chest / Dark Room</h3>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="boss-grid">
+      <div class="boss-card" data-name="The Lamb">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_The_Lamb_ingame.png?b31710" alt="The Lamb">
+        <h4>The Lamb</h4>
+        <p>Финал тёмного пути, разделяется на части после смерти.</p>
+      </div>
+      <div class="boss-card" data-name="Mega Satan">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_Mega_Satan_ingame.png?400dc7" alt="Mega Satan">
+        <h4>Mega Satan</h4>
+        <p>Эпичный финальный босс, использующий мощные волны и призывы.</p>
+      </div>
+      <div class="boss-card" data-name="Delirium">
+        <img src="https://bindingofisaacrebirth.wiki.gg/images/Boss_Delirium_ingame.png?8e3c15" alt="Delirium">
+        <h4>Delirium</h4>
+        <p>Хаотичный босс, меняющий форму и стиль боя во время сражения.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="floor-section" data-floor="Mini Bosses">
+    <div class="floor-header">
+      <h3>Мини-боссы</h3>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="boss-grid">
+      <div class="boss-card" data-name="Sloth">
+        <img src="https://static.wikia.nocookie.net/bindingofisaac/images/2/25/Boss_Sloth.png/revision/latest?cb=20210515134516&path-prefix=ru" alt="Sloth">
+        <h4>Sloth</h4>
+        <p>Повышает сложность комнаты и стреляет слезами.</p>
+      </div>
+      <div class="boss-card" data-name="Greed">
+        <img src="https://static.wikia.nocookie.net/bindingofisaac/images/6/66/Boss_Greed.png/revision/latest?cb=20210515133724&path-prefix=ru" alt="Greed">
+        <h4>Greed</h4>
+        <p>Финальный мини-босс в магазине, выпускает деньги при поражении.</p>
+      </div>
+      <div class="boss-card" data-name="Lust">
+        <img src="https://static.wikia.nocookie.net/bindingofisaac/images/6/61/Boss_Lust.png/revision/latest?cb=20210515134145&path-prefix=ru" alt="Lust">
+        <h4>Lust</h4>
+        <p>Очень быстрый и опасный мини-босс, нападает рывками.</p>
+      </div>
+      <div class="boss-card" data-name="Envy">
+        <img src="https://static.wikia.nocookie.net/bindingofisaac/images/a/a8/Boss_Envy.png/revision/latest?cb=20210515133027&path-prefix=ru" alt="Envy">
+        <h4>Envy</h4>
+        <p>Создаёт копии игрока и атакует их слезами.</p>
+      </div>
+      <div class="boss-card" data-name="Gluttony">
+        <img src="https://static.wikia.nocookie.net/bindingofisaac/images/9/9a/Boss_Gluttony.png/revision/latest?cb=20210515133423&path-prefix=ru" alt="Gluttony">
+        <h4>Gluttony</h4>
+        <p>Большой босс с атаками по площади и спавном мелких врагов.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Эффект наклона hero-блока
+  const bossCover = document.querySelector('.hero .boss-cover');
+  bossCover.addEventListener('mousemove', e => {
+    const rect = bossCover.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const dx = (x - cx) / cx;
+    const dy = (y - cy) / cy;
+    bossCover.style.transform = `perspective(800px) rotateX(${dy*10}deg) rotateY(${-dx*10}deg) scale(1.03)`;
+    bossCover.style.filter = 'brightness(0.9)';
+  });
+  bossCover.addEventListener('mouseleave', () => {
+    bossCover.style.transform = 'scale(1)';
+    bossCover.style.filter = 'brightness(1)';
+  });
+
+  // Сворачивание этажей
+  document.querySelectorAll('.floor-header').forEach(header => {
+    header.addEventListener('click', () => {
+      header.parentElement.classList.toggle('collapsed');
+    });
+  });
+
+  // Поиск по имени босса
+  const searchInput = document.getElementById('bossSearch');
+  const floorSections = document.querySelectorAll('.floor-section');
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    floorSections.forEach(section => {
+      const cards = section.querySelectorAll('.boss-card');
+      let anyVisible = false;
+      cards.forEach(card => {
+        const name = card.dataset.name.toLowerCase();
+        if(name.includes(query)) {
+          card.style.display = 'block';
+          anyVisible = true;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      section.style.display = anyVisible || query === '' ? 'block' : 'none';
+    });
+  });
+</script>
+
+</body>
+</html>
