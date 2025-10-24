@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Предметы — The Binding Of Isaac</title>
+
+  <link rel="icon" href="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" type="image/png">
+  <style>
+    :root {
+      --bg: #0f1720;
+      --card: #111827;
+      --muted: #9aa4b2;
+      --text: #e6eef6;
+      --border: rgba(255,255,255,0.05);
+      --glass: rgba(255,255,255,0.03);
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, sans-serif;
+      background: linear-gradient(180deg, #0f1720, #071020, #000000 70%, #000000 100%);
+      color: var(--text);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      cursor: pointer;
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .logo:hover {
+      transform: rotate(5deg) scale(1.05);
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+
+    .logo:hover img {
+      transform: scale(1.1);
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hero {
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.03);
+      display: flex;
+      gap: 18px;
+      margin: 28px auto;
+      max-width: 1200px;
+      transform: translateY(-20px);
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    .cover {
+      width: 1450px;
+      height: 520px;
+      border-radius: 12px;
+      background-image: url('https://minecraft-inside.ru/uploads/files/2025-01/image_9.png');
+      background-size: cover;
+      background-position: center;
+      box-shadow: inset 0 0 25px rgba(255,255,255,0.05), inset 0 0 40px rgba(0,0,0,0.4);
+      transition: transform 0.1s ease, filter 0.2s ease;
+    }
+
+    .cover.leave {
+      transform: perspective(800px) rotateX(0deg) rotateY(0deg) scale(1);
+      filter: brightness(1);
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .info h2 {
+      margin: 0 0 8px 0;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 18px;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 24px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 15px;
+      text-decoration: none;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.06);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 191, 255, 0.3);
+    }
+
+    .search-box,
+    .filter-box {
+      margin-bottom: 20px;
+    }
+
+    .search-box input,
+    .filter-box select {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background-color: var(--card);
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    td img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    tr:hover {
+      background-color: rgba(255,255,255,0.03);
+    }
+
+    .type {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      th {
+        display: none;
+      }
+
+      td {
+        padding: 10px;
+        border: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 4px;
+        color: var(--muted);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Шапка -->
+  <header class="top">
+    <div class="brand">
+      <div class="logo">
+        <a href="Isaac.html">
+          <img src="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" alt="Isaac logo">
+        </a>
+      </div>
+      <div>
+        <h1>The Binding Of Isaac — Википедия</h1>
+        <p>Фанатская википедия / Предметы</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero с обложкой -->
+  <section class="hero">
+    <div class="cover" aria-hidden="true"></div>
+    <div class="info">
+      <span class="pill">Раздел</span>
+      <h2>Все предметы в The Binding Of Isaac</h2>
+      <p class="small">Список пассивных, активных предметов и брелоков с описанием и иконками.
+        <br></br>
+        <br>Активируемые артефакты - занимающие слот активного предмета и используемые посредством нажатия клавиши «пробел» по умолчанию. 
+        Такие предметы можно поделить на перезаряжающиеся определенное количество зачищенных комнат, перезаряжающиеся по истечении какого-то 
+        промежутка времени или же не имеющие перезарядку вовсе.</br>
+        <br></br>
+        <br>Пассивные артефакты - дающие какие-либо улучшения характеристик персонажа, число которых в сравнении с предыдущей частью серии 
+        возросло и на данный момент составляет 6 пунктов (скорость передвижения, скорострельность, скорость полёта слез, урон, дальность и удача), 
+        артефакты, модифицирующие основную атаку, защитные/атакующие спутники и многие другие.</br>
+        <br></br>
+        <br>Брелоки (Trinkets) - подбираемые пассивные (не активируемые) предметы, выпадающие на протяжении всей игры в случайных местах. 
+        Поднятый брелок находится в левом нижнем углу экрана. Обычно можно носить всего лишь 1 брелок, но есть артефакты позволяющие увеличить 
+        количество слотов до двух, такие как Мамина сумочка и тд. Также стоит отметить, что два одинаковых брелока невозможно подобрать.</br>
+      </p>
+    </div>
+  </section>
+
+  <!-- Контент -->
+  <main class="container">
+    <a href="Isaac.html" class="back-btn">← Назад</a>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Поиск по названию или описанию...">
+    </div>
+
+    <div class="filter-box">
+      <select id="typeFilter">
+        <option value="">Все типы</option>
+        <option value="Пассивный">Пассивный</option>
+        <option value="Активный">Активный</option>
+        <option value="Брелок">Брелок</option>
+      </select>
+    </div>
+
+    <table id="itemsTable">
+      <thead>
+        <tr>
+          <th>Иконка</th>
+          <th onclick="sortTable(1)">Название (RU)</th>
+          <th onclick="sortTable(2)">Название (EN)</th>
+          <th onclick="sortTable(3)">Тип</th>
+          <th>Описание</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Пример строки -->
+        <tr>
+        <td data-label="Иконка"><img src="https://static.wikia.nocookie.net/bindingofisaac/images/1/1e/331collectibles.png/revision/latest/scale-to-width-down/52?cb=20141114190206&path-prefix=ru" alt="Godhead"></td>
+        <td data-label="Название (RU)">Божья Голова</td>
+        <td data-label="Название (EN)">Godhead</td>
+        <td data-label="Тип" class="type">Пассивный</td>
+        <td data-label="Описание">Добавляет ауру урона к слезам. Один из самых мощных предметов.</td>
+      </tr>
+      <tr>
+        <td data-label="Иконка"><img src="https://static.wikia.nocookie.net/bindingofisaac/images/a/a9/125collectibles.png/revision/latest/scale-to-width-down/52?cb=20141111095841&path-prefix=ru" alt="Bobby-Bomb"></td>
+        <td data-label="Название (RU)">Бомба Бобби</td>
+        <td data-label="Название (EN)">Bobby-Bomb</td>
+        <td data-label="Тип" class="type">Пассивный</td>
+        <td data-label="Описание">Даёт 5 бомб. Бомбы самонаводятся на врагов.</td>
+      </tr>
+      <tr>
+        <td data-label="Иконка"><img src="https://static.wikia.nocookie.net/bindingofisaac/images/b/b3/182collectibles.png/revision/latest/scale-to-width-down/52?cb=20141111112616&path-prefix=ru" alt="Sacred Heart"></td>
+        <td data-label="Название (RU)">Святое Сердце</td>
+        <td data-label="Название (EN)">Sacred Heart</td>
+        <td data-label="Тип" class="type">Пассивный</td>
+        <td data-label="Описание">Мощный буст урона. Слёзы становятся медленнее, но самонаводятся.</td>
+      </tr>
+      <tr>
+        <td data-label="Иконка"><img src="https://static.wikia.nocookie.net/bindingofisaac/images/f/f9/105collectibles.png/revision/latest/scale-to-width-down/52?cb=20141111093548&path-prefix=ru" alt="D6"></td>
+        <td data-label="Название (RU)">D6</td>
+        <td data-label="Название (EN)">The D6</td>
+        <td data-label="Тип" class="type">Активный</td>
+        <td data-label="Описание">Позволяет перераоллить предмет на пьедестале. Заряжается за 6 комнат.</td>
+      </tr>
+      <tr>
+        <td data-label="Иконка"><img src="https://static.wikia.nocookie.net/bindingofisaac/images/e/e9/035trinket.png/revision/latest?cb=20141111184918&path-prefix=ru" alt="Curved Horn"></td>
+        <td data-label="Название (RU)">Изогнутый Рог</td>
+        <td data-label="Название (EN)">Curved Horn</td>
+        <td data-label="Тип" class="type">Брелок</td>
+        <td data-label="Описание">Даёт +2 к урону. Один из лучших тринкетов в игре.</td>
+      </tr>
+      <tr>
+        <td data-label="Иконка"><img src="https://static.wikia.nocookie.net/bindingofisaac/images/d/d4/287collectibles.png/revision/latest/scale-to-width-down/52?cb=20141111173707&path-prefix=ru" alt="Book of Secrets"></td>
+        <td data-label="Название (RU)">Книга тайн</td>
+        <td data-label="Название (EN)">Book of Secrets</td>
+        <td data-label="Тип" class="type">Активный</td>
+        <td data-label="Описание">Даёт случайный эффект Компаса, Голубой карты или Карты сокровищ на данный этаж.
+          <br><br>Если есть все эффекты, то даёт эффект Рентгеновского зрения.
+        </td>
+      </tr>
+      <tr>
+        <td data-label="Иконка"><img src="https://static.wikia.nocookie.net/bindingofisaac/images/3/34/041trinket.png/revision/latest?cb=20141111184401&path-prefix=ru" alt="Match Stick"></td>
+        <td data-label="Название (RU)">Спичка</td>
+        <td data-label="Название (EN)">Match Stick</td>
+        <td data-label="Тип" class="type">Брелок</td>
+        <td data-label="Описание">Увеличивает шанс получения бомбы после зачистки комнаты и открытии сундуков. Позволяет снять клеща.</td>
+      </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    const cover = document.querySelector('.cover');
+    cover.addEventListener('mousemove', e => {
+      const rect = cover.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const dx = (x - rect.width / 2) / (rect.width / 2);
+      const dy = (y - rect.height / 2) / (rect.height / 2);
+      const rotateX = dy * 10;
+      const rotateY = dx * -10;
+      cover.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(0.97)`;
+      cover.style.filter = 'brightness(0.9)';
+    });
+    cover.addEventListener('mouseleave', () => {
+      cover.classList.add('leave');
+      setTimeout(() => {
+        cover.classList.remove('leave');
+        cover.style.transform = '';
+        cover.style.filter = '';
+      }, 200);
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    const typeFilter = document.getElementById('typeFilter');
+    const table = document.getElementById("itemsTable");
+    const tbody = table.tBodies[0];
+
+    function filterTable() {
+      const search = searchInput.value.toLowerCase();
+      const type = typeFilter.value;
+      const rows = tbody.querySelectorAll("tr");
+
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const itemType = row.children[3].textContent.trim();
+        const matchesSearch = text.includes(search);
+        const matchesType = !type || itemType === type;
+        row.style.display = matchesSearch && matchesType ? "" : "none";
+      });
+    }
+
+    searchInput.addEventListener("input", filterTable);
+    typeFilter.addEventListener("change", filterTable);
+
+    let currentSort = { column: null, direction: 1 };
+    function sortTable(columnIndex) {
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const direction = currentSort.column === columnIndex ? -currentSort.direction : 1;
+      currentSort = { column: columnIndex, direction };
+      rows.sort((a, b) => {
+        const cellA = a.children[columnIndex].textContent.trim().toLowerCase();
+        const cellB = b.children[columnIndex].textContent.trim().toLowerCase();
+        return cellA.localeCompare(cellB) * direction;
+      });
+      rows.forEach(row => tbody.appendChild(row));
+    }
+  </script>
+</body>
+</html>

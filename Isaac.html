@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Википедия по игре «The Binding Of Isaac»</title>
+
+  <!-- Иконка на вкладке -->
+  <link rel="icon" href="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" type="image/png">
+  
+  <style>
+    :root{
+      --bg:#0f1720;
+      --card:#111827;
+      --muted:#9aa4b2;
+      --accent:#00bfff;
+      --glass: rgba(255,255,255,0.03);
+    }
+
+    /* Задний фон, градиент */
+    html, body {
+      margin: 0;
+      font-family: Inter,Segoe UI,Helvetica,Arial,sans-serif;
+      min-height: 100%;
+      background: linear-gradient(180deg, #0f1720, #071020, #000000 70%, #000000 100%);
+      color: #e6eef6;
+    }
+
+    *{box-sizing:border-box}
+    a{color:inherit;text-decoration:none}
+
+    .top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .logo{
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      overflow:hidden;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+      transition:transform 0.4s ease, box-shadow 0.4s ease;
+      cursor:pointer;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition:transform 0.4s ease;
+    }
+    .logo:hover{
+      transform:rotate(5deg) scale(1.05);
+      box-shadow:0 0 20px rgba(255,255,255,0.2);
+    }
+    .logo:hover img{
+      transform:scale(1.1);
+    }
+    .brand h1{
+      font-size:18px;
+      margin:0;
+    }
+    .brand p{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .container {
+  max-width: 1200px;
+  margin: 48px auto;
+  padding: 0 36px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  padding-top: 100px;
+}
+    
+    .container section {
+      padding-bottom: 32px; 
+    }
+
+    /* Центрируем hero */
+    .hero {
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 28px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.03);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: fadeIn 1s ease forwards;
+      max-width: 900px;
+      margin: 0 auto 40px auto;
+    }
+
+    .hero .cover {
+      width: 100%;
+      max-width: 900px;
+      height: 310px;
+      border-radius: 12px;
+      background-image: url('https://images.steamusercontent.com/ugc/5167913864208831/C94CB3121FC3EA5A0C5387C4C23D99BEA65962C6/');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      transition: transform 0.1s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      box-shadow: inset 0 0 25px rgba(255,255,255,0.05), inset 0 0 40px rgba(0,0,0,0.4);
+      filter: brightness(1);
+    }
+
+    .hero .cover.leave {
+      transform: perspective(800px) rotateX(0deg) rotateY(0deg) scale(1);
+      filter: brightness(1);
+      box-shadow: inset 0 0 25px rgba(255,255,255,0.05), inset 0 0 40px rgba(0,0,0,0.4);
+    }
+
+    .hero .info {
+      max-width: 840px;
+      text-align: center;
+    }
+
+    .hero .info h2 {
+      margin: 0 0 12px 0;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      user-select: none;
+    }
+
+    .small {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-top: 24px;
+      opacity: 0;
+      animation: fadeIn 1.2s ease forwards 0.3s;
+    }
+    
+    /* Эффект для карточек */
+    .tile {
+      background: var(--card);
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.02);
+      min-height: 110px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .tile:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 26px rgba(0,0,0,0.8), 0 0 28px rgba(0,191,255,0.4) inset;
+    }
+
+    /* Свечение только по краям */
+    .tile::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      pointer-events: none;
+      background: transparent;
+      box-shadow: 0 0 10px rgba(0,191,255,0.7), 
+                  0 0 18px rgba(0,191,255,0.5), 
+                  0 0 26px rgba(0,191,255,0.3) inset;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 0;
+    }
+
+    .tile:hover::before {
+      opacity: 1;
+    }
+
+    .tile h3, .tile p, .tile img {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .tile h3 {
+      margin: 0 0 8px 0;
+      font-size: 17px;
+    }
+
+    .tile p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tile img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 520px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .logo {
+        width: 44px;
+        height: 44px;
+      }
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+.hero-button-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 280px;
+  min-height: 70px;
+  margin: 20px auto 0;
+  padding: 2px 4px;
+}
+
+.hero-button-tile h3 {
+  text-align: center;
+  font-size: 20px;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Иконка -->
+  <header class="top">
+    <div class="brand">
+      <div class="logo">
+        <a href="Isaac.html">
+          <img src="https://gamefaqs.gamespot.com/a/box/4/3/0/622430_front.jpg" alt="Isaac logo">
+        </a>
+      </div>
+     <div>
+        <h1>The Binding Of Isaac — Википедия</h1>
+        <p>Фанатская википедия / Главная страница</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section>
+      
+      <!-- Центрированный блок hero -->
+      <div class="hero">
+        <div class="info">
+          <span class="pill">Главная</span>
+          <h2>Добро пожаловать на веб-сайт по игре The Binding Of Isaac</h2>
+                  <div class="cover" aria-hidden="true"></div>
+          <p class="small">Здесь собирается информация об предметах, персонажах, боссах и прочая информация об игре.</p>
+          <a href="history_game.html" class="tile hero-button-tile">
+        <div>
+          <h3>Изучить историю игры</h3>
+        </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="grid">
+
+        <!-- Предметы -->
+        <a href="Категории/items.html" class="tile">
+          <img src="https://fbi.cults3d.com/uploaders/31804928/illustration-file/e2174f76-0917-4230-99b5-08be5e002d2e/Godhead.png" alt="Предметы">
+          <div>
+            <h3>Предметы</h3>
+            <p>Каталог всех предметов: пассивных, активных и трансформаций.</p>
+          </div>
+        </a>
+
+        <!-- Персонажи -->
+        <a href="Категории/characters.html" class="tile">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/6/6e/Rep_%D0%9F%D0%BE%D1%80%D1%87%D0%B5%D0%BD%D1%8B%D0%B9_%3F%3F%3F.png/revision/latest?cb=20210404194740&path-prefix=ru" alt="Персонажи">
+          <div>
+            <h3>Персонажи</h3>
+            <p>Описание стартовых и разблокируемых персонажей с советами по сборке.</p>
+          </div>
+        </a>
+
+        <!-- Комнаты -->
+        <a href="Категории/rooms.html" class="tile">
+          <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/47a536d5-7647-4379-a2fe-83122cb5f867/da3j2bf-78973af2-51ce-425b-ade0-9ad65fc4da3a.png/v1/fill/w_936,h_624,q_80,strp/binding_of_isaac_rebirth_tiles_by_wanyo_da3j2bf-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NjI0IiwicGF0aCI6IlwvZlwvNDdhNTM2ZDUtNzY0Ny00Mzc5LWEyZmUtODMxMjJjYjVmODY3XC9kYTNqMmJmLTc4OTczYWYyLTUxY2UtNDI1Yi1hZGUwLTlhZDY1ZmM0ZGEzYS5wbmciLCJ3aWR0aCI6Ijw9OTM2In1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.aqY7ejuiVRmhVT7MKPr-yfYIzd9yBXVtsA2PcUA7pHw" alt="Комнаты">
+          <div>
+            <h3>Комнаты</h3>
+            <p>Типы комнат, секретные зоны и их особенности.</p>
+          </div>
+        </a>
+
+        <!-- Боссы -->
+        <a href="Категории/bosses.html" class="tile">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/5/50/Boss_Monstro_ingame.png/revision/latest?cb=20220705131254&path-prefix=ru" alt="Боссы и мини-боссы">
+          <div>
+            <h3>Боссы и мини-боссы</h3>
+            <p>Описание всех боссов, мини-боссов и стратегий их победы.</p>
+          </div>
+        </a>
+
+        <!-- Монстры -->
+        <a href="Категории/monsters.html" class="tile">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/5/5c/Horf.png/revision/latest?cb=20190823074924&path-prefix=ru" alt="Монстры">
+          <div>
+            <h3>Монстры</h3>
+            <p>Описание всех обычных монстров и их особенностей.</p>
+          </div>
+        </a>
+
+        <!-- История обновлений -->
+        <a href="Категории/update_history.html" class="tile">
+          <img src="https://static.wikia.nocookie.net/bindingofisaac/images/1/15/530collectibles.png/revision/latest?cb=20171011082714&path-prefix=ru" alt="История обновлений">
+          <div>
+            <h3>История обновлений</h3>
+            <p>Хронология версий, патч-ноты и изменения баланса.</p>
+          </div>
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Скрипт для анимации лого -->
+  <script>
+    const cover = document.querySelector('.hero .cover');
+
+    cover.addEventListener('mousemove', e => {
+      const rect = cover.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+
+      const dx = (x - cx) / cx;
+      const dy = (y - cy) / cy;
+
+      const rotateX = dy * 10;
+      const rotateY = dx * -10;
+
+      cover.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(0.97)`;
+      cover.style.filter = 'brightness(0.9)';
+    });
+
+    cover.addEventListener('mouseleave', () => {
+      cover.classList.add('leave');
+      setTimeout(() => {
+        cover.classList.remove('leave');
+        cover.style.transform = '';
+        cover.style.filter = '';
+      }, 200);
+    });
+  </script>
+
+</body>
+</html>
